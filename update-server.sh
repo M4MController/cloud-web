@@ -6,4 +6,8 @@ if ! type "nginx" > /dev/null; then
 fi;
 
 cp -f nginx.conf /etc/nginx/nginx.conf;
+
+mkdir -p /usr/api;
+cp -n sensor.example /usr/api/sensor;
+
 service nginx reload;
