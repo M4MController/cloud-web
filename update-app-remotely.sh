@@ -6,7 +6,7 @@ if [[ $1 == "" ]]; then
 fi;
 
 if [[ $2 == "" ]]; then
-  source_dir = './frontend';
+  source_dir="./frontend";
   git clone https://github.com/m4mcontroller/frontend $source_dir;
 else
   source_dir=$2;
