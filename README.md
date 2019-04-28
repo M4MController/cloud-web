@@ -19,7 +19,7 @@
 Запускать с рабочего компьютера при первой установке, либо при обновлении [фронтенда](https://github.com/m4mcontroller/frontend).
 
 ```bash
-./update-app-remotely <controller IP>
+./update-app-remotely <controller IP> <google maps api key>
 ```
 
 Оно скачает, соберёт и отправит на контроллер фронтенд M4M.
