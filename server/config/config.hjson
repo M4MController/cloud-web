@@ -1,0 +1,13 @@
+{
+    host: 'localhost',
+    port: 5000,
+
+    user_token: "admin12345",
+
+    database: {
+        name: "mongo_db", # Database name
+        host: "localhost",
+        port: 27017
+        obd_json: "./obd.json" # Initial values to add to database
+    }
+}
