@@ -1,6 +1,6 @@
 from pymongo import MongoClient
 import hjson
-from config import config
+from config.config import config
 
 database_config = config["database"]
 
