@@ -7,7 +7,12 @@
     database: {
         name: "mongo_db", # Database name
         host: "localhost",
-        port: 27017
-        obd_json: "./obd.json" # Initial values to add to database
+        port: 27017,
+
+        # Initial values to store in db
+        initials: [
+            { id: 7, file: "./gps.json" },
+            { id: 8, file: "./obd.json" }
+        ]
     }
 }
