@@ -21,3 +21,7 @@ class DatabaseManager:
     @staticmethod
     def get_last_obd():
         return get_last(database["sensor_" + str(sensor_ids["OBD"])])["value"]
+
+    @staticmethod
+    def get_available_data(sensor_id, proj):
+        return list(database["sensor_" + str(sensor_id)].find(projection=proj))

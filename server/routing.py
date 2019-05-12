@@ -1,5 +1,5 @@
 import hjson
-from flask import jsonify
+from flask import jsonify, request
 
 from .server import app
 from .config.config import config
@@ -42,4 +42,20 @@ class Routing:
         except:
             app.logger.error('Unable to return data!')
 
+            return jsonify({}), 500
+
+    @staticmethod
+    @app.route('/data/sensor/<int:_id>/data')
+    def data_query(_id):
+        field = request.args.get('field')
+        try:
+            proj = {"_id": False, "timestamp": True}
+            if field is not None:
+                proj["value." + str(field)] = True
+            else:
+                proj["value"] = True
+
+            return jsonify(DatabaseManager.get_available_data(_id, proj))
+        except:
+            app.logger.error('Unable to retrieve data for query from db!')
             return jsonify({}), 500
