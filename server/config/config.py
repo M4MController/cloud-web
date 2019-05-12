@@ -1,8 +1,9 @@
-from server import app
 import hjson
-import os
+from os.path import join, dirname
 
-config_file = os.path.join(os.path.dirname(__file__) + 'config.hjson')
+from ..server import app
+
+config_file = join(dirname(__file__) + './config.hjson')
 config = {}
 
 try:

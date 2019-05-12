@@ -1,8 +1,9 @@
-from server import app
-from flask import jsonify
-from config.config import config
-from database import DatabaseManager
 import hjson
+from flask import jsonify
+
+from .server import app
+from .config.config import config
+from .database import DatabaseManager
 
 
 class Routing:
@@ -23,14 +24,14 @@ class Routing:
         try:
             return jsonify([
                               {
-                                "id": 1,
+                                "id": 7,
                                 "name": "GPS",
                                 "last_value": hjson.dumpsJSON(DatabaseManager.get_last_gps()),
                                 "status": 1,
                                 "type": 0
                               },
                               {
-                                "id": 2,
+                                "id": 8,
                                 "name": "OBD",
                                 "last_value": hjson.dumpsJSON(DatabaseManager.get_last_obd()),
                                 "status": 1,

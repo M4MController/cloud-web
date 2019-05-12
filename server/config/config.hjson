@@ -11,8 +11,8 @@
 
         # Initial values to store in db
         initials: [
-            { id: 7, file: "./gps.json" },
-            { id: 8, file: "./obd.json" }
+            { id: 7, name: "gps", file: "./gps.json" },
+            { id: 8, name: "obd",  file: "./obd.json" }
         ]
     }
 }
