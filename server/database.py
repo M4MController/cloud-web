@@ -1,6 +1,7 @@
 from pymongo import MongoClient, DESCENDING
 
 from .config.config import config
+from .config.sensors import sensor_ids
 
 database_config = config["database"]
 
@@ -15,8 +16,8 @@ def get_last(collection):
 class DatabaseManager:
     @staticmethod
     def get_last_gps():
-        return get_last(database["sensor_7"])["value"]
+        return get_last(database["sensor_" + str(sensor_ids["GPS"])])["value"]
 
     @staticmethod
     def get_last_obd():
-        return get_last(database["sensor_8"])["value"]
+        return get_last(database["sensor_" + str(sensor_ids["OBD"])])["value"]
