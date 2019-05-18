@@ -17,7 +17,5 @@ if __name__ == '__main__':
 
     if argc == 1 or "--start" in keys or "-s" in keys:
         from server.server import app
-        from server.config.config import config
-        from server.routing import Routing
 
-        app.run(host=config["host"], port=config["port"])
+        app.run()

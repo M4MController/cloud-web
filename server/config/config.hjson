@@ -5,14 +5,13 @@
     user_token: "admin12345",
 
     database: {
-        name: "mongo_db", # Database name
-        host: "localhost",
-        port: 27017,
-
-        # Initial values to store in db
-        initials: [
-            { id: 7, name: "GPS", file: "./gps.json" },
-            { id: 8, name: "OBD",  file: "./obd.json" }
-        ]
-    }
+        objects: {
+            uri: "postgresql://m4m:12345@localhost:5432/m4m"
+        },
+        data: {
+            name: "mongo_db", # Database name
+            host: "localhost",
+            port: 27017,
+        }
+    },
 }
