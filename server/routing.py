@@ -30,6 +30,11 @@ class Auth(BaseResource):
         return {'token': config['user_token']}
 
 
+class User(BaseResource):
+    def get(self):
+        return config['user_info']
+
+
 class ObjectsResource(BaseResource):
     def _insert_last_value(self, sensors):
         data_manager = SensorDataManager(self.db_data)
@@ -59,3 +64,4 @@ def register_routes(app):
     app.register_route(Auth, 'sign_in', '/sign_in')
     app.register_route(ObjectsResource, 'objects', '/objects')
     app.register_route(SensorDataResource, 'sensor_data', '/sensor/<int:sensor_id>/data')
+    app.register_route(User, 'user_info', '/user/info')
