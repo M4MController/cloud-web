@@ -45,12 +45,18 @@ system("sudo service nginx start")
 try:
 	while True:
 		if obd_con.is_connected():
-			data = obd_read(obd_con)
-			json_send(1, data)
+			try:
+				data = obd_read(obd_con)
+				json_send(1, data)
+			except:
+				print("Failed reading data from obd!")
 
 		if gsm_con:
-			lat, lon = gsm_getGPS(gsm_con)
-			json_send(2, {'lat': lat, 'lon': lon})
+			try:
+				lat, lon = gsm_getGPS(gsm_con)
+				json_send(2, {'lat': lat, 'lon': lon})
+			except:
+				print("Failed reading data from gps!")
 
 		time.sleep(polling_delay)
 except KeyboardInterrupt:
