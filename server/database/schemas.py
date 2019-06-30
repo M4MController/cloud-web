@@ -2,7 +2,7 @@ from marshmallow import Schema, fields
 
 
 class SensorDataSchema(Schema):
-    time_stamp = fields.DateTime(attribute='timestamp')
+    time_stamp = fields.String(attribute='timestamp')
     value = fields.Dict()
 
 
