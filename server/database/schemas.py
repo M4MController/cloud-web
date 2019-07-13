@@ -32,12 +32,6 @@ class SensorSchema(Schema):
     controller = fields.Integer(attribute='controller_id')
 
 
-class SensorDataSchema(Schema):
-    id = fields.Integer()
-    sensor_id = fields.Integer()
-    data = fields.Dict()
-
-
 class ResourceSchema(Schema):
     objects = fields.Nested(ObjectSchema, many=True)
     controllers = fields.Nested(ControllerSchema, many=True)

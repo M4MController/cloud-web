@@ -57,7 +57,7 @@ class SensorDataManager(BaseSqlManager):
 
 	def get_sensor_data(self, sensor_id):
 		return self.session.query(self.model.data)\
-			.filter(self.model.sensor_id == sensor_id)
+			.filter(self.model.sensor_id == sensor_id)["data"]
 
 	def get_last_record(self, sensor_id):
 		return self.session.query(self.model.data)\
