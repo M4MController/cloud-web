@@ -30,6 +30,7 @@ CREATE TABLE sensors
 
 CREATE TABLE sensor_data
 (
+    id                SERIAL PRIMARY KEY,
     sensor_type       INT NOT NULL,
     data              JSON NOT NULL
 );

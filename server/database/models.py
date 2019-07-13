@@ -69,8 +69,10 @@ class Sensor(Base):
         lazy='noload',
     )
 
+
 class SensorData(Base):
     __tablename__ = 'sensor_data'
 
+    id = Column(Integer, primary_key=True)
     sensor_type = Column(Integer, nullable=False)
     data = Column(JSON, nullable=False)
