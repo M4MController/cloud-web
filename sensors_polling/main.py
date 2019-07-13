@@ -46,15 +46,15 @@ try:
 	while True:
 		if obd_con.is_connected():
 			try:
-				data = obd_read(obd_con)
-				json_send(1, data)
-			except:
-				print("Failed reading data from obd!")
+                            data = obd_read(obd_con)
+                            json_send(9, data)
+			except Exception as e:
+				print("Failed reading data from obd!", e)
 
 		if gsm_con:
 			try:
 				lat, lon = gsm_getGPS(gsm_con)
-				json_send(2, {'lat': lat, 'lon': lon})
+				json_send(10, {'lat': lat, 'lon': lon})
 			except:
 				print("Failed reading data from gps!")
 

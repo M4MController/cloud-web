@@ -115,6 +115,6 @@ def obd_read(con):
     data = {}
     for cmd in command_table:
         response = con.query(cmd)
-        data[cmd.name.lower()] = response.value
+        data[cmd.name.lower()] = str(response.value)
 
     return data

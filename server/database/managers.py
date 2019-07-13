@@ -53,7 +53,10 @@ class SensorDataManager(BaseSqlManager):
 	model = SensorData
 
 	def save_new(self, sensor_id, data):
-		return self.create({sensor_id: sensor_id, data: data})
+                s = SensorData(data={'timestamp': '234234', 'value': data}, sensor_id=sensor_id)
+                self.session.add(s)
+                self.session.commit()
+                return s
 
 	def get_sensor_data(self, sensor_id):
 		return [ x[0] for x in self.session.query(self.model.data)\

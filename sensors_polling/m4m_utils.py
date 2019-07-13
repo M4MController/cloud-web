@@ -7,18 +7,20 @@ from pymongo import MongoClient
 from server.database.managers import SensorDataManager
 from server.config import config
 
-database = None
+from sqlalchemy.orm import Session
+from sqlalchemy import create_engine
+
+session = None
 
 
 def get_db():
-    global database
-    if database is not None:
-        return database
+    global session
+    if session is not None:
+        return session
 
-    client = MongoClient(config['database']['data']['host'], config['database']['data']["port"])
-    database = client[config['database']['data']["name"]]
+    session = Session(create_engine(config['database']['objects']['uri']))
 
-    return database
+    return session
 
 
 def getMAC():
