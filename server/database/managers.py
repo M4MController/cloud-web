@@ -62,4 +62,4 @@ class SensorDataManager(BaseSqlManager):
 	def get_last_record(self, sensor_id):
 		return self.session.query(self.model.data)\
 			.filter(self.model.sensor_id == sensor_id)\
-			.order_by(self.model.id.desc()).one()
+			.order_by(self.model.id.desc()).first()
