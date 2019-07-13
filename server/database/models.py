@@ -74,5 +74,11 @@ class SensorData(Base):
     __tablename__ = 'sensor_data'
 
     id = Column(Integer, primary_key=True)
-    sensor_type = Column(Integer, nullable=False)
+    sensor_id = Column(Integer, ForeignKey('sensors.id'), nullable=False)
     data = Column(JSON, nullable=False)
+
+    sensor = relationship(
+        'Sensor',
+        uselist=False,
+        lazy='noload',
+    )

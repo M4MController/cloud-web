@@ -34,7 +34,7 @@ class SensorSchema(Schema):
 
 class SensorDataSchema(Schema):
     id = fields.Integer()
-    sensor_type = fields.Integer()
+    sensor_id = fields.Integer()
     data = fields.Dict()
 
 
