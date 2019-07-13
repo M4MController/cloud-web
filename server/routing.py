@@ -19,7 +19,7 @@ class User(BaseResource):
 
 class ObjectsResource(BaseResource):
     def _insert_last_value(self, sensors):
-        data_manager = SensorDataManager(self.db_data)
+        data_manager = SensorDataManager(self.db_session)
 
         for sensor in sensors:
             last_value = data_manager.get_last_record(sensor.id)
@@ -44,7 +44,7 @@ class SensorDataResource(BaseResource):
     @provide_db_session
     @schematic_response(SensorDataSchema(many=True))
     def get(self, sensor_id):
-        return SensorDataManager(self.db_data).get_sensor_data(sensor_id)
+        return SensorDataManager(self.db_session).get_sensor_data(sensor_id)
 
 
 class AllObjectsInfoResource(BaseResource):
