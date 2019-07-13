@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from random import random
 
 from sqlalchemy import create_engine
@@ -50,13 +50,13 @@ def main():
         now -= timedelta(seconds=1)
         car_gps.sensor_data.append(SensorData(
             data={
-                'timestamp': now,
+                'timestamp': now.replace(tzinfo=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S"),
                 'value': {"lon": random() * 360 - 180, "lat": random() * 180 - 90}
             },
         ))
         car_obd.sensor_data.append(SensorData(
             data={
-                'timestamp': now,
+                'timestamp': now.replace(tzinfo=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S"),
                 'value': {"speed": random() * 10 + 60}
             }
         ))
@@ -66,6 +66,7 @@ def main():
     session.add(car_obd)
     session.add(car_gps)
     session.commit()
+
 
 if __name__ == '__main__':
     main()
