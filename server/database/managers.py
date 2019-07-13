@@ -56,25 +56,10 @@ class SensorDataManager(BaseSqlManager):
 		return self.create({sensor_id: sensor_id, data: data})
 
 	def get_sensor_data(self, sensor_id):
-		return self.session.query(self.model)\
-			.select(columns=[self.model.sensor_type])\
-			.filter(self.model.sensor_type == sensor_id)
+		return self.session.query(self.model.data)\
+			.filter(self.model.sensor_id == sensor_id)
 
 	def get_last_record(self, sensor_id):
-		return self.session.query(self.model)\
-			.select(columns=[self.model.sensor_type])\
-			.filter(self.model.sensor_type == sensor_id)\
+		return self.session.query(self.model.data)\
+			.filter(self.model.sensor_id == sensor_id)\
 			.order_by(self.model.data['_id'].desc())[1]
-
-# class SensorDataManager:
-# 	def __init__(self, database):
-# 		self._database = database
-#
-# 	def save_new(self, sensor_id, data):
-# 		return self._database['sensor_{}'.format(sensor_id)].insert_one(data)
-#
-# 	def get_all(self, sensor_id):
-# 		return self._database['sensor_{}'.format(sensor_id)].find()
-#
-# 	def get_last_record(self, sensor_id):
-# 		return self._database['sensor_{}'.format(sensor_id)].find_one({}, sort=[('_id', DESCENDING)])
