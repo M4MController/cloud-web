@@ -8,7 +8,7 @@ from server.database.models import (
     Object,
     Controller,
     Sensor,
-)
+    SensorData)
 
 from server.config import config
 
@@ -46,43 +46,26 @@ def main():
         controller=car_controller,
     )
 
+    for i in range(1000):
+        now -= timedelta(seconds=1)
+        car_gps.sensor_data.append(SensorData(
+            data={
+                'timestamp': now,
+                'value': {"lon": random() * 360 - 180, "lat": random() * 180 - 90}
+            },
+        ))
+        car_obd.sensor_data.append(SensorData(
+            data={
+                'timestamp': now,
+                'value': {"speed": random() * 10 + 60}
+            }
+        ))
+
     session.add(car)
     session.add(car_controller)
     session.add(car_obd)
     session.add(car_gps)
     session.commit()
-
-    # database_config = config["database"]["data"]
-    #
-    # client = MongoClient(database_config["host"], database_config["port"])
-    # database = client[database_config["name"]]
-    #
-    # for collection in database.list_collection_names():
-    #     database.drop_collection(collection)
-    #
-    # obd_collection = database["sensor_{}".format(car_obd.id)]
-    # gps_collection = database["sensor_{}".format(car_gps.id)]
-    #
-    #
-    # gps_data = []
-    # for i in range(1000):
-    #     now -= timedelta(seconds=1)
-    #     gps_data.append({
-    #         'timestamp': now,
-    #         'value': {"lon": random() * 360 - 180, "lat": random() * 180 - 90}
-    #     })
-    #
-    # obd_data = []
-    # for i in range(1000):
-    #     now -= timedelta(seconds=1)
-    #     obd_data.append({
-    #         'timestamp': now,
-    #         'value': {"speed": random() * 10 + 60}
-    #     })
-    #
-    # gps_collection.insert_many(gps_data)
-    # obd_collection.insert_many(obd_data)
-
 
 if __name__ == '__main__':
     main()

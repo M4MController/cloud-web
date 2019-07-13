@@ -68,6 +68,11 @@ class Sensor(Base):
         uselist=False,
         lazy='noload',
     )
+    sensor_data = relationship(
+        'SensorData',
+        uselist=True,
+        lazy='noload'
+    )
 
 
 class SensorData(Base):
