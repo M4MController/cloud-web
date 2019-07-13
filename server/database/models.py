@@ -7,6 +7,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.dialects.postgresql import JSON
 
 Base = declarative_base()
 
@@ -67,3 +68,9 @@ class Sensor(Base):
         uselist=False,
         lazy='noload',
     )
+
+class SensorData(Base):
+    __tablename__ = 'sensor_data'
+
+    sensor_type = Column(Integer, nullable=False)
+    data = Column(JSON, nullable=False)

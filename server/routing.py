@@ -41,9 +41,10 @@ class ObjectsResource(BaseResource):
 
 
 class SensorDataResource(BaseResource):
+    @provide_db_session
     @schematic_response(SensorDataSchema(many=True))
     def get(self, sensor_id):
-        return SensorDataManager(self.db_data).get_all(sensor_id)
+        return SensorDataManager(self.db_data).get_sensor_data(sensor_id)
 
 
 class AllObjectsInfoResource(BaseResource):

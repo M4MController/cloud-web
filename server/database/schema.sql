@@ -27,3 +27,9 @@ CREATE TABLE sensors
     deactivation_date DATE DEFAULT NULL,
     sensor_type       INT  DEFAULT NULL
 );
+
+CREATE TABLE sensor_data
+(
+    sensor_type       INT NOT NULL,
+    data              JSON NOT NULL
+);

@@ -1,7 +1,7 @@
 import logging
 
 from flask import Flask
-from pymongo import MongoClient
+# from pymongo import MongoClient
 from sqlalchemy import create_engine
 
 from server.routing import register_routes
@@ -16,8 +16,8 @@ class App:
 
         self.db_engine = create_engine(config['database']['objects']['uri'])
 
-        client = MongoClient(config['database']['data']['host'], config['database']['data']["port"])
-        self.data_client = client[config['database']['data']["name"]]
+        # client = MongoClient(config['database']['data']['host'], config['database']['data']["port"])
+        # self.data_client = client[config['database']['data']["name"]]
 
         register_routes(self)
 
