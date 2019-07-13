@@ -31,6 +31,6 @@ CREATE TABLE sensors
 CREATE TABLE sensor_data
 (
     id                SERIAL PRIMARY KEY,
-    sensor_id         INTEGER FOREIGN KEY,
+    sensor_id         INTEGER REFERENCES sensors(id),
     data              JSON NOT NULL
 );
