@@ -1,8 +1,6 @@
 from sqlalchemy.exc import InternalError
 from sqlalchemy.orm.exc import NoResultFound
 
-from pymongo import DESCENDING
-
 from server.database.models import (
 	Object,
 	Controller,
