@@ -18,7 +18,6 @@ class BaseResource(MethodView):
         super().__init__(*args, **kwargs)
         session_factory = sessionmaker(bind=app.db_engine)
         self.db_session = scoped_session(session_factory)
-        self.db_data = app.data_client
 
     @safe_handler
     def dispatch_request(self, *args, **kwargs):
