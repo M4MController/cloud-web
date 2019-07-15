@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
-import json
 from datetime import datetime, timezone
 from gpiozero import Buzzer
 from time import sleep
-from pymongo import MongoClient
 from server.database.managers import SensorDataManager
-from server.config import config
+from config import config
 
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine
@@ -35,12 +33,7 @@ def getMAC():
 
 
 def json_send(sensor_id, data):
-    json_data = {
-        "value": json.dumps(data),
-        "timestamp": datetime.now().replace(tzinfo=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")
-    }
-
-    return SensorDataManager(get_db()).save_new(sensor_id, json_data)
+    return SensorDataManager(get_db()).save_new(sensor_id, data)
 
 
 def cur_date():
