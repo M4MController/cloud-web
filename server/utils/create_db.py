@@ -2,7 +2,7 @@ from pymongo import MongoClient
 import hjson
 from os.path import join, dirname
 
-from ..config import config
+from config import config
 
 
 def create():

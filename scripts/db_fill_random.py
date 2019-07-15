@@ -10,7 +10,7 @@ from server.database.models import (
     Sensor,
     SensorData)
 
-from server.config import config
+from config import config
 
 
 def main():
