@@ -28,7 +28,7 @@ class SensorSchema(Schema):
     name = fields.String()
     status = fields.Integer()
     last_value = fields.Dict(allow_none=True)
-    type = fields.Integer()
+    type = fields.Integer(attribute='sensor_type')
     controller = fields.Integer(attribute='controller_id')
 
 
