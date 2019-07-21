@@ -46,10 +46,10 @@ def send_data(sensor_id, timestamp, value):
     response = requests.post('{}/sensor.addRecord'.format(config['m4m_server']['receiver_uri']), json=data)
     if response.status_code != 200:
         logger.error(
-            "Failed to send data {} to the M4M server. Status code: {}. Response: ",
+            "Failed to send data %s to the M4M server. Status code: %s. Response: ",
             timestamp,
             response.status_code,
             response.text,
         )
         raise Exception("Failed to send data to the M4M server")
-    logger.info("Data {} was send to the M4M server", timestamp)
+    logger.info("Data %s was send to the M4M server", timestamp)
