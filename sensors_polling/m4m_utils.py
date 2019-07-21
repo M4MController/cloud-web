@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 from gpiozero import Buzzer
 from time import sleep
 from server.database.managers import SensorDataManager
+from m4m_client import send_data
 from config import config
 
 from sqlalchemy.orm import Session
@@ -21,19 +22,17 @@ def get_db():
     return session
 
 
-def getMAC():
-    try:
-        try:
-            mac = open("/sys/class/net/ppp0/address").read()
-        except:
-            mac = open("/sys/class/net/eth0/address").read()
-    except:
-        mac = "00:00:00:00:00:00"
-    return mac[0:17]
-
-
 def json_send(sensor_id, data):
-    return SensorDataManager(get_db()).save_new(sensor_id, data)
+    now = datetime.now()
+    timestamp = now.replace(tzinfo=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")
+    try:
+        send_data(sensor_id, now, data)
+    except Exception as e:
+        print("Can not send data", e)
+    return SensorDataManager(get_db()).save_new(sensor_id, {
+        'timestamp': timestamp,
+        'value': data,
+    })
 
 
 def cur_date():

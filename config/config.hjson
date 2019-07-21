@@ -24,10 +24,9 @@
         objects: {
             uri: "postgresql://m4m:12345@localhost:5432/m4m"
         },
-        data: {
-            name: "mongo_db", # Database name
-            host: "localhost",
-            port: 27017,
-        }
+    },
+
+    m4m_server: {
+        receiver_uri: 'https://receiver.meter4.me',
     },
 }

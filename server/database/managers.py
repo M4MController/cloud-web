@@ -2,10 +2,10 @@ from sqlalchemy.exc import InternalError
 from sqlalchemy.orm.exc import NoResultFound
 
 from server.database.models import (
-	Object,
-	Controller,
-	Sensor,
-	SensorData,
+    Object,
+    Controller,
+    Sensor,
+    SensorData,
 )
 
 from server.errors import ConflictError, ObjectNotFoundError
@@ -54,11 +54,7 @@ class SensorDataManager(BaseSqlManager):
     model = SensorData
 
     def save_new(self, sensor_id, data):
-        now = datetime.now()
-        s = SensorData(data={
-            'timestamp': now.replace(tzinfo=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S"),
-            'value': data,
-        }, sensor_id=sensor_id)
+        s = SensorData(data=data, sensor_id=sensor_id)
         self.session.add(s)
         self.session.commit()
         return s
