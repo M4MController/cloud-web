@@ -27,15 +27,15 @@ gsm_con = gsm_start()
 #eth check
 
 #obd START
-obd_con = obd_start()
+while True:
+	obd_con = obd_start()
+	if obd_con.is_connected():
+		break
 #if not obd_con.is_connected():
 #gsm_sendSMS(gsm_con, PHONE, MSG_OBD_DISCONNECT_ENG)
 
 data = {}
 lat, lon = 0, 0
-
-#nginx START
-system("sudo service nginx start")
 
 
 #gsm_call(gsm_con, PHONE)

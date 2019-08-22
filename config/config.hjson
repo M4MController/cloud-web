@@ -22,7 +22,7 @@
 
     database: {
         objects: {
-            uri: "postgresql://m4m:12345@localhost:5432/m4m"
+            uri: "postgresql://m4m:12345@postgres:5432/m4m"
         },
     },
 

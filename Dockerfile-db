@@ -1,0 +1,4 @@
+FROM postgres
+MAINTAINER Eduard Asriyan <ed-asriyan@protonmail.com>
+
+ADD server/database/schema.sql /docker-entrypoint-initdb.d/psql_dump.sql
