@@ -57,7 +57,7 @@ INSERT INTO sensors VALUES (
   NULL,
   NULL,
   NULL,
-  6
+  5
 );
 
 INSERT INTO sensors VALUES (
