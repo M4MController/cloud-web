@@ -53,9 +53,12 @@ def schematic_response(schema):
     def decor(func):
         def wrapper(*args, **kwargs):
             result = func(*args, **kwargs)
+
             if not isinstance(result, tuple):
                 result = (result, 200)
+
             result, code = result
+
             return make_response(
                 schema.dumps(result).data,
                 code,

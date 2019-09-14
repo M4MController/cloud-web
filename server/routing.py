@@ -1,4 +1,5 @@
 from config import config
+from flask import request
 from server.resources.base import BaseResource
 from server.database.schemas import SensorDataSchema, ResourceSchema
 
@@ -46,7 +47,10 @@ class SensorDataResource(BaseResource):
     @provide_db_session
     @schematic_response(SensorDataSchema(many=True))
     def get(self, sensor_id):
-        return SensorDataManager(self.db_session).get_sensor_data(sensor_id)
+        result = SensorDataManager(self.db_session)\
+            .get_sensor_data(sensor_id, request.args.get('from'), request.args.get('field'))
+
+        return result
 
 
 class AllObjectsInfoResource(BaseResource):
