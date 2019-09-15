@@ -25,7 +25,6 @@ class ObjectsResource(BaseResource):
         for sensor in sensors:
             last_value = data_manager.get_last_record(sensor.id)
             sensor.last_value = last_value and last_value['value']
-            print(sensor.last_value)
 
     @provide_db_session
     @schematic_response(ResourceSchema())
@@ -33,8 +32,6 @@ class ObjectsResource(BaseResource):
         sensors = SensorManager(self.db_session).get_all()
         objects = ObjectManager(self.db_session).get_all()
         controllers = ControllerManager(self.db_session).get_all()
-        self._insert_last_value(sensors)
-        print(sensors[-1].last_value)
 
         return {
             'objects': objects,

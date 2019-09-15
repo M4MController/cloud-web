@@ -32,7 +32,8 @@ CREATE TABLE sensor_data
 (
     id                SERIAL PRIMARY KEY,
     sensor_id         INTEGER REFERENCES sensors(id),
-    data              JSON NOT NULL
+    data              JSON NOT NULL,
+    sign              BYTEA DEFAULT NULL
 );
 
 INSERT INTO objects VALUES (
