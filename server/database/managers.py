@@ -80,8 +80,13 @@ class SensorDataManager(BaseSqlManager):
         if field is not None:
             if field == 'time_stamp':
                 field = time_field
-            query = query.with_entities(self.model.data['value'][field])
-            return [{'value': x[0]} for x in query.all()]
+
+            query = query.with_entities(self.model.data[time_field], self.model.data['value'][field])
+
+            if field == time_field:
+                return [{time_field: x[0]} for x in query.all()]
+
+            return [{time_field: x[0], 'value': {field: x[1]}} for x in query.all()]
 
         return [x[0] for x in query.all()]
 
