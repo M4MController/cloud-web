@@ -69,15 +69,3 @@ INSERT INTO sensors VALUES (
   NULL,
   6
 );
-
-INSERT INTO sensor_data VALUES (
-  default,
-  6,
-  '{"timestamp":"", "value": {}}'
-);
-
-INSERT INTO sensor_data VALUES (
-  default,
-  7,
-  '{"timestamp":"", "value": {}}'
-);
