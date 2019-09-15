@@ -4,9 +4,9 @@ from sqlalchemy import DateTime
 
 from server.database.models import (
     Object,
-	Controller,
-	Sensor,
-	SensorData,
+    Controller,
+	  Sensor,
+	  SensorData,
 )
 
 from server.errors import ConflictError, ObjectNotFoundError
