@@ -1,11 +1,11 @@
 from config import config
 from flask import request
-from server.resources.base import BaseResource
-from server.database.schemas import SensorDataSchema, ResourceSchema
-
-from server.resources.utils import provide_db_session, schematic_response
 
 from server.database.managers import SensorManager, SensorDataManager, ObjectManager, ControllerManager
+from server.resources.base import BaseResource
+from server.resources.utils import provide_db_session, schematic_response
+
+from server.schemas import SensorDataSchema, ResourceSchema
 
 
 class Auth(BaseResource):
@@ -44,7 +44,7 @@ class SensorDataResource(BaseResource):
     @provide_db_session
     @schematic_response(SensorDataSchema(many=True))
     def get(self, sensor_id):
-        result = SensorDataManager(self.db_session)\
+        result = SensorDataManager(self.db_session) \
             .get_sensor_data(sensor_id, request.args.get('from'), request.args.get('field'))
 
         return result
