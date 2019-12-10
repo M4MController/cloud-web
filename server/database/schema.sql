@@ -33,40 +33,6 @@ CREATE TABLE sensor_data
     id                SERIAL PRIMARY KEY,
     sensor_id         INTEGER REFERENCES sensors(id),
     data              JSON NOT NULL,
+    signer            BYTEA DEFAULT NULL,
     sign              BYTEA DEFAULT NULL
-);
-
-INSERT INTO objects VALUES (
-  1,
-  'Mercedes'
-);
-
-INSERT INTO controllers VALUES (
-  1,
-  'OBD',
-  1,
-  NULL,
-  NULL,
-  NULL,
-  5
-);
-
-INSERT INTO sensors VALUES (
-  6,
-  'OBD',
-  1,
-  NULL,
-  NULL,
-  NULL,
-  5
-);
-
-INSERT INTO sensors VALUES (
-  7,
-  'GPS',
-  1,
-  NULL,
-  NULL,
-  NULL,
-  6
 );

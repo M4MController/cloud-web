@@ -1,9 +1,31 @@
+import base64
+
 from marshmallow import Schema, fields
 
 
-class SensorDataSchema(Schema):
+class Base64Field(fields.Field):
+    _encoding = 'utf-8'
+
+    def _serialize(self, value, attr, obj):
+        if value is None:
+            return None
+        return str(base64.b64encode(value), encoding=self._encoding)
+
+    def _deserialize(self, value, attr, data):
+        if value is None:
+            return None
+        return base64.b64decode(value)
+
+
+class SensorDataRecordSchema(Schema):
     time_stamp = fields.String(attribute='timestamp')
     value = fields.Dict()
+
+
+class SensorDataSchema(Schema):
+    data = fields.Nested(SensorDataRecordSchema)
+    signer = Base64Field()
+    sign = Base64Field()
 
 
 class ObjectSchema(Schema):

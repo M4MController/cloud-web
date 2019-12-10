@@ -1,5 +1,8 @@
+import logging
+import sys
+
 from datetime import datetime, timedelta, timezone
-from random import random
+from random import random, randint
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
@@ -8,9 +11,16 @@ from server.database.models import (
     Object,
     Controller,
     Sensor,
-    SensorData)
+    SensorData,
+)
 
 from config import config
+
+logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+
+
+def generate_random_bytes(length):
+    return bytearray([randint(0, 255) for _ in range(length)])
 
 
 def main():
@@ -18,6 +28,7 @@ def main():
 
     session = Session(create_engine(config['database']['objects']['uri']))
 
+    session.query(SensorData).delete()
     session.query(Sensor).delete()
     session.query(Controller).delete()
     session.query(Object).delete()
@@ -46,19 +57,23 @@ def main():
         controller=car_controller,
     )
 
-    for i in range(1000):
+    for _ in range(1000):
         now -= timedelta(seconds=1)
         car_gps.sensor_data.append(SensorData(
             data={
                 'timestamp': now.replace(tzinfo=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S"),
                 'value': {"lon": random() * 360 - 180, "lat": random() * 180 - 90}
             },
+            sign=generate_random_bytes(5),
+            signer=generate_random_bytes(10),
         ))
         car_obd.sensor_data.append(SensorData(
             data={
                 'timestamp': now.replace(tzinfo=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S"),
                 'value': {"speed": random() * 10 + 60}
-            }
+            },
+            sign=generate_random_bytes(5),
+            signer=generate_random_bytes(10),
         ))
 
     session.add(car)

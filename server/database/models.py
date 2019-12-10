@@ -2,12 +2,13 @@ from sqlalchemy import (
     Column,
     DateTime,
     ForeignKey,
+    LargeBinary,
     Integer,
     String
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.dialects.postgresql import JSON, BYTEA
+from sqlalchemy.dialects.postgresql import JSON
 
 Base = declarative_base()
 
@@ -81,7 +82,8 @@ class SensorData(Base):
     id = Column(Integer, primary_key=True)
     sensor_id = Column(Integer, ForeignKey('sensors.id'), nullable=False)
     data = Column(JSON, nullable=False)
-    sign = Column(BYTEA)
+    sign = Column(LargeBinary)
+    signer = Column(LargeBinary)
 
     sensor = relationship(
         'Sensor',
