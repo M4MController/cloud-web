@@ -59,21 +59,23 @@ def main():
 
     for _ in range(1000):
         now -= timedelta(seconds=1)
+        add_sign = randint(0, 1) == 1
         car_gps.sensor_data.append(SensorData(
             data={
                 'timestamp': now.replace(tzinfo=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S"),
                 'value': {"lon": random() * 360 - 180, "lat": random() * 180 - 90}
             },
-            sign=generate_random_bytes(5),
-            signer=generate_random_bytes(10),
+            sign=generate_random_bytes(5) if add_sign else None,
+            signer=generate_random_bytes(10) if add_sign else None,
         ))
+        add_sign = randint(0, 1) == 1
         car_obd.sensor_data.append(SensorData(
             data={
                 'timestamp': now.replace(tzinfo=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S"),
                 'value': {"speed": random() * 10 + 60}
             },
-            sign=generate_random_bytes(5),
-            signer=generate_random_bytes(10),
+            sign=generate_random_bytes(5) if add_sign else None,
+            signer=generate_random_bytes(10) if add_sign else None,
         ))
 
     session.add(car)
