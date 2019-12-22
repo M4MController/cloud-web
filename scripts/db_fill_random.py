@@ -47,11 +47,13 @@ def main():
         object=car
     )
     car_obd = Sensor(
+        id=1,
         name='OBD',
         sensor_type=5,
         controller=car_controller,
     )
     car_gps = Sensor(
+        id=2,
         name='GPS',
         sensor_type=6,
         controller=car_controller,

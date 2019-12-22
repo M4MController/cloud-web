@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
-from os import system
+import os
+import time
+
+from random import random
+
 from m4m_imu import *
 from m4m_utils import *
 from m4m_obd import *
@@ -20,17 +24,19 @@ imu_t.start()
 imu_ev.set()
 
 #GSM START
-gsm_con = gsm_start()
+def get_gsm_con():
+    return gsm_start()
 
 #sim check
 
 #eth check
 
 #obd START
-while True:
-	obd_con = obd_start()
-	if obd_con.is_connected():
-		break
+def get_obd_con():
+    while True:
+        obd_con = obd_start()
+        if obd_con.is_connected():
+            return obd_con
 #if not obd_con.is_connected():
 #gsm_sendSMS(gsm_con, PHONE, MSG_OBD_DISCONNECT_ENG)
 
@@ -42,26 +48,38 @@ lat, lon = 0, 0
 #beep()
 
 try:
+    use_stubs = bool(os.environ.get('USE_STUBS', False))
+    obd_sensor_id = int(os.environ.get('OBD_SENSOR_ID', 1))
+    gsm_sensor_id = int(os.environ.get('GSM_SENSOR_ID', 2))
+
+    if not use_stubs:
+        obd_con = get_obd_con()
+        gsm_con = get_obd_con()
+
     while True:
-        if obd_con.is_connected():
+        if use_stubs:
+            json_send(obd_sensor_id, {'speed': random() * 100})
+        elif obd_con.is_connected():
             try:
                 data = obd_read(obd_con)
-                json_send(6, data)
+                json_send(obd_sensor_id, data)
             except Exception as e:
                 print("Failed reading data from obd!", e)
 
-        if gsm_con:
+        if use_stubs:
+            json_send(obd_sensor_id, {'lat': random() * 50, 'lon': random() * 5})
+        elif gsm_con:
             try:
                 lat, lon = gsm_getGPS(gsm_con)
-                json_send(7, {'lat': lat, 'lon': lon})
+                json_send(gsm_sensor_id, {'lat': lat, 'lon': lon})
             except:
                 print("Failed reading data from gps!")
 
         time.sleep(polling_delay)
 except KeyboardInterrupt:
-    if gsm_con is not None:
+    if not use_stubs and gsm_con is not None:
         gsm_con.close()
 finally:
-    imu_t.do_run = False
-    if gsm_con:
+    # imu_t.do_run = False
+    if not use_stubs and gsm_con:
         gsm_con.close()
