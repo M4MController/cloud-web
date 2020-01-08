@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import logging
 from datetime import datetime, timezone
 from gpiozero import Buzzer
 from time import sleep
@@ -8,6 +9,8 @@ from config import config
 
 from sqlalchemy.orm import Session
 from sqlalchemy import create_engine
+
+logger = logging.getLogger(__name__)
 
 session = None
 
@@ -28,7 +31,7 @@ def json_send(sensor_id, data):
     try:
         send_data(sensor_id, now, data)
     except Exception as e:
-        print("Can not send data", e)
+        logger.info("Can not send data", e)
     return SensorDataManager(get_db()).save_new(sensor_id, {
         'timestamp': timestamp,
         'value': data,

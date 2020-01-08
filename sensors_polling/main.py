@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
+import logging
 import os
+import sys
 import time
 
 from random import random
@@ -9,9 +11,12 @@ from m4m_utils import *
 from m4m_obd import *
 from m4m_gsm import *
 
+logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
 polling_delay = 1
-print(cur_date(), "Power on\n")
-print("Current polling delay time: {}s".format(polling_delay))
+logger.info(cur_date(), "Power on\n")
+logger.info("Current polling delay time: {}s".format(polling_delay))
 
 
 #redOn()
@@ -64,7 +69,7 @@ try:
                 data = obd_read(obd_con)
                 json_send(obd_sensor_id, data)
             except Exception as e:
-                print("Failed reading data from obd!", e)
+                logger.info("Failed reading data from obd! %s", e)
 
         if use_stubs:
             json_send(obd_sensor_id, {'lat': random() * 50, 'lon': random() * 5})
@@ -73,7 +78,7 @@ try:
                 lat, lon = gsm_getGPS(gsm_con)
                 json_send(gsm_sensor_id, {'lat': lat, 'lon': lon})
             except:
-                print("Failed reading data from gps!")
+                logger.info("Failed reading data from gps!")
 
         time.sleep(polling_delay)
 except KeyboardInterrupt:

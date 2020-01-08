@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import logging
 import obd
 from m4m_utils import cur_date
 from termcolor import colored
@@ -100,13 +101,15 @@ command_table = [
     obd.commands.FUEL_RATE,
 ]
 
+logger = logging.getLogger(__name__)
+
 def obd_start():
-    print(cur_date(), "Connecting OBD...")
+    logger.info("Connecting OBD...")
     obd_con = obd.OBD()
     if obd_con.is_connected():
-        print(cur_date(), "OBD connected\n")
+        logger.info("OBD connected\n")
     else:
-        print(cur_date(), colored("OBD not connected\n", 'red'))
+        logger.info("OBD not connected\n")
 
     return obd_con 
 
