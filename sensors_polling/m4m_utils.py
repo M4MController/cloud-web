@@ -25,11 +25,12 @@ def get_db():
     return session
 
 
-def json_send(sensor_id, data):
+def json_send(sensor_id, data, send_to_server=True):
     now = datetime.now()
     timestamp = now.replace(tzinfo=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")
     try:
-        send_data(sensor_id, now, data)
+        if send_to_server:
+            send_data(sensor_id, now, data)
     except Exception as e:
         logger.info("Can not send data", e)
     return SensorDataManager(get_db()).save_new(sensor_id, {
