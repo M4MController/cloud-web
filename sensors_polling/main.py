@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
+import logging
 import os
+import sys
 import time
 
 from random import random
@@ -9,9 +11,12 @@ from m4m_utils import *
 from m4m_obd import *
 from m4m_gsm import *
 
+logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
 polling_delay = 1
-print(cur_date(), "Power on\n")
-print("Current polling delay time: {}s".format(polling_delay))
+logger.info(cur_date(), "Power on\n")
+logger.info("Current polling delay time: {}s".format(polling_delay))
 
 
 #redOn()
@@ -51,6 +56,7 @@ try:
     use_stubs = bool(os.environ.get('USE_STUBS', False))
     obd_sensor_id = int(os.environ.get('OBD_SENSOR_ID', 1))
     gsm_sensor_id = int(os.environ.get('GSM_SENSOR_ID', 2))
+    send_to_server = bool(os.environ.get('SEND_TO_SERVER', True))
 
     if not use_stubs:
         obd_con = get_obd_con()
@@ -58,22 +64,22 @@ try:
 
     while True:
         if use_stubs:
-            json_send(obd_sensor_id, {'speed': random() * 100})
+            json_send(obd_sensor_id, {'speed': random() * 100}, send_to_server=send_to_server)
         elif obd_con.is_connected():
             try:
                 data = obd_read(obd_con)
-                json_send(obd_sensor_id, data)
+                json_send(obd_sensor_id, data, send_to_server=send_to_server)
             except Exception as e:
-                print("Failed reading data from obd!", e)
+                logger.info("Failed reading data from obd! %s", e)
 
         if use_stubs:
-            json_send(obd_sensor_id, {'lat': random() * 50, 'lon': random() * 5})
+            json_send(obd_sensor_id, {'lat': random() * 50, 'lon': random() * 5}, send_to_server=send_to_server)
         elif gsm_con:
             try:
                 lat, lon = gsm_getGPS(gsm_con)
-                json_send(gsm_sensor_id, {'lat': lat, 'lon': lon})
+                json_send(gsm_sensor_id, {'lat': lat, 'lon': lon}, send_to_server=send_to_server)
             except:
-                print("Failed reading data from gps!")
+                logger.info("Failed reading data from gps!")
 
         time.sleep(polling_delay)
 except KeyboardInterrupt:

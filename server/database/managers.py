@@ -77,18 +77,14 @@ class SensorDataManager(BaseSqlManager):
             except ValueError as error:
                 print('from field has incorrect format: ', error, '; Expected: %Y-%m-%dT%H:%M:%S')
 
+        result = query.all()
+
         if field is not None:
-            if field == 'time_stamp':
-                field = time_field
+            result = list(filter(lambda x: field in x.data['value'], result))
+            for record in result:
+                record.data['value'] = {field: record.data['value'][field]}
 
-            query = query.with_entities(self.model.data[time_field], self.model.data['value'][field])
-
-            if field == time_field:
-                return [{time_field: x[0]} for x in query.all()]
-
-            return [{time_field: x[0], 'value': {field: x[1]}} for x in query.all()]
-
-        return query.all()
+        return result
 
     def get_last_record(self, sensor_id):
         result = self.session.query(self.model.data) \
