@@ -36,3 +36,38 @@ CREATE TABLE sensor_data
     signer            BYTEA DEFAULT NULL,
     sign              BYTEA DEFAULT NULL
 );
+
+INSERT INTO objects VALUES (
+  1,
+  'Mercedes'
+);
+
+INSERT INTO controllers VALUES (
+  1,
+  'OBD',
+  1,
+  NULL,
+  NULL,
+  NULL,
+  5
+);
+
+INSERT INTO sensors VALUES (
+  1,
+  'OBD',
+  1,
+  NULL,
+  NULL,
+  NULL,
+  5
+);
+
+INSERT INTO sensors VALUES (
+  2,
+  'GPS',
+  1,
+  NULL,
+  NULL,
+  NULL,
+  6
+);
