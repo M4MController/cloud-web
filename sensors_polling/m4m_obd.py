@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 import obd
+import os
 from m4m_utils import cur_date
 from termcolor import colored
 
@@ -105,7 +106,7 @@ logger = logging.getLogger(__name__)
 
 def obd_start():
     logger.info("Connecting OBD...")
-    obd_con = obd.OBD()
+    obd_con = obd.OBD(os.environ.get('DEVICE', None))
     if obd_con.is_connected():
         logger.info("OBD connected\n")
     else:
