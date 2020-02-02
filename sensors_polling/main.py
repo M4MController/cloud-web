@@ -60,7 +60,7 @@ try:
 
     if not use_stubs:
         obd_con = get_obd_con()
-        gsm_con = get_obd_con()
+        gsm_con = get_gsm_con()
 
     while True:
         if use_stubs:
@@ -73,7 +73,7 @@ try:
                 logger.info("Failed reading data from obd! %s", e)
 
         if use_stubs:
-            json_send(obd_sensor_id, {'lat': random() * 50, 'lon': random() * 5}, send_to_server=send_to_server)
+            json_send(gsm_sensor_id, {'lat': random() * 50, 'lon': random() * 5}, send_to_server=send_to_server)
         elif gsm_con:
             try:
                 lat, lon = gsm_getGPS(gsm_con)

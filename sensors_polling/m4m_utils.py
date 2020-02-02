@@ -33,10 +33,7 @@ def json_send(sensor_id, data, send_to_server=True):
             send_data(sensor_id, now, data)
     except Exception as e:
         logger.info("Can not send data", e)
-    return SensorDataManager(get_db()).save_new(sensor_id, {
-        'timestamp': timestamp,
-        'value': data,
-    })
+    return SensorDataManager(get_db()).save_new(sensor_id, data)
 
 
 def cur_date():
