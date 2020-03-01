@@ -14,7 +14,7 @@ from m4m_gsm import *
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-polling_delay = 1
+polling_delay = int(os.environ.get('TIMEOUT', '1'))
 logger.info(cur_date(), "Power on\n")
 logger.info("Current polling delay time: {}s".format(polling_delay))
 
