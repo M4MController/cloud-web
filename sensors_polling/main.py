@@ -52,8 +52,9 @@ lat, lon = 0, 0
 #gsm_call(gsm_con, PHONE)
 #beep()
 
+use_stubs = int(os.environ.get('USE_STUBS', "0"))
+
 try:
-    use_stubs = int(os.environ.get('USE_STUBS', "0"))
     obd_sensor_id = int(os.environ.get('OBD_SENSOR_ID', 1))
     gsm_sensor_id = int(os.environ.get('GSM_SENSOR_ID', 2))
     send_to_server = bool(os.environ.get('SEND_TO_SERVER', True))
