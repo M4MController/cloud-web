@@ -6,7 +6,6 @@ import time
 
 from random import random
 
-from m4m_imu import *
 from m4m_utils import *
 from m4m_obd import *
 from m4m_gsm import *
@@ -20,14 +19,6 @@ logger.info("Current polling delay time: {}s".format(polling_delay))
 
 
 #redOn()
-
-#IMU START -> thread
-imu_ev = threading.Event()
-imu_t = threading.Thread(target=imu_connect, args=())
-imu_t.do_run = True
-imu_t.start()
-imu_ev.set()
-
 #GSM START
 def get_gsm_con():
     return gsm_start()
@@ -86,6 +77,5 @@ except KeyboardInterrupt:
     if not use_stubs and gsm_con is not None:
         gsm_con.close()
 finally:
-    # imu_t.do_run = False
     if not use_stubs and gsm_con:
         gsm_con.close()
