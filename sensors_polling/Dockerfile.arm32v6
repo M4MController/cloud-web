@@ -1,0 +1,24 @@
+FROM arm32v6/python:3.7-alpine
+MAINTAINER Eduard Asriyan <ed-asriyan@protonmail.com>
+
+WORKDIR /application
+
+# notice: crete for docker-compose in controller deploy. build context is on one level up: ..
+
+RUN apk add gcc musl-dev postgresql-dev --no-cache
+
+ADD requirements.txt .
+RUN pip3 install --no-cache-dir -r requirements.txt
+
+RUN pip3 install gpiozero termcolor obd
+
+ADD server ./server
+ADD m4m_client ./m4m_client
+ADD config/__init__.py ./config/__init__.py
+ADD config/config.hjson ./config/config.hjson
+ADD sensors_polling/main.py ./main.py
+ADD sensors_polling/m4m_gsm.py ./m4m_gsm.py
+ADD sensors_polling/m4m_obd.py ./m4m_obd.py
+ADD sensors_polling/m4m_utils.py ./m4m_utils.py
+
+CMD python3 ./main.py
