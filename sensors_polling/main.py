@@ -14,7 +14,7 @@ from m4m_gsm import *
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-polling_delay = 1
+polling_delay = int(os.environ.get('TIMEOUT', '1'))
 logger.info(cur_date(), "Power on\n")
 logger.info("Current polling delay time: {}s".format(polling_delay))
 
@@ -52,8 +52,9 @@ lat, lon = 0, 0
 #gsm_call(gsm_con, PHONE)
 #beep()
 
+use_stubs = int(os.environ.get('USE_STUBS', "0"))
+
 try:
-    use_stubs = bool(os.environ.get('USE_STUBS', False))
     obd_sensor_id = int(os.environ.get('OBD_SENSOR_ID', 1))
     gsm_sensor_id = int(os.environ.get('GSM_SENSOR_ID', 2))
     send_to_server = bool(os.environ.get('SEND_TO_SERVER', True))
@@ -64,7 +65,10 @@ try:
 
     while True:
         if use_stubs:
-            json_send(obd_sensor_id, {'speed': random() * 100}, send_to_server=send_to_server)
+            data = {'speed': random() * 100}
+            for i in range(use_stubs):
+                data[str(i)] = random() * 100
+            json_send(obd_sensor_id, data, send_to_server=send_to_server)
         elif obd_con.is_connected():
             try:
                 data = obd_read(obd_con)
