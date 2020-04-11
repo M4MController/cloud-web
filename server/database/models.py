@@ -87,3 +87,11 @@ class SensorData(Base):
         uselist=False,
         lazy='noload',
     )
+
+
+class User(Base):
+    __tablename__ = 'users'
+
+    id = Column(Integer, primary_key=True)
+    username = Column(String, nullable=False)
+    pwd_hash = Column(String, nullable=False)

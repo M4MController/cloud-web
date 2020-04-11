@@ -35,6 +35,13 @@ CREATE TABLE sensor_data
     data              JSON NOT NULL
 );
 
+CREATE TABLE users
+(
+  id SERIAL PRIMARY KEY,
+  username VARCHAR NOT NULL,
+  pwd_hash VARCHAR NOT NULL
+);
+
 INSERT INTO objects VALUES (
   1,
   'Mercedes'

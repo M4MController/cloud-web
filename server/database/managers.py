@@ -5,8 +5,9 @@ from sqlalchemy import DateTime
 from server.database.models import (
     Object,
     Controller,
-	  Sensor,
-	  SensorData,
+	Sensor,
+	SensorData,
+    User
 )
 
 from server.errors import ConflictError, ObjectNotFoundError
@@ -94,3 +95,19 @@ class SensorDataManager(BaseSqlManager):
         return self.session.query(self.model.data) \
             .filter(self.model.sensor_id == sensor_id) \
             .order_by(self.model.id.desc()).first()[0]
+
+
+class UserManager(BaseSqlManager):
+    model = User
+
+    def save_new(self, login, pwd_hash):
+        return self.create({
+            'username': login,
+            'pwd_hash': pwd_hash
+        })
+
+    def get_by_login(self, login):
+        try:
+            return self.session.query(self.model).filter_by(username=login).one()
+        except NoResultFound:
+            raise ObjectNotFoundError(object='Record')

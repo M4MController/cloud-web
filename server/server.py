@@ -1,6 +1,7 @@
 import logging
 
 from flask import Flask
+from flask_jwt_extended import JWTManager
 from sqlalchemy import create_engine
 
 from server.routing import register_routes
@@ -12,6 +13,9 @@ class App:
     def __init__(self, config):
         self._config = config
         self._flask = Flask(__name__)
+
+        self._flask.config['JWT_SECRET_KEY'] = config['secret']
+        self._jwt = JWTManager(self._flask)
 
         self.db_engine = create_engine(config['database']['objects']['uri'])
 
