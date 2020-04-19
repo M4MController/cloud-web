@@ -1,12 +1,12 @@
 schema = {
 	'type': 'object',
 	'properties': {
-		'email': {
+		'login': {
 			'type': 'string'
 		},
 		'password': {
 			'type': 'string',
 		},
 	},
-	'required': ['email', 'password'],
+	'required': ['login', 'password'],
 }

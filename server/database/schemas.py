@@ -1,6 +1,40 @@
 from marshmallow import Schema, fields
 
 
+class RegisterSchema(Schema):
+    token = fields.String()
+
+
+class AuthSchema(Schema):
+    token = fields.String()
+
+
+class UserInfoSchema(Schema):
+    family_name = fields.String()
+    name = fields.String()
+    second_name = fields.String()
+    date_receiving = fields.Integer()
+    issued_by = fields.String()
+    division_number = fields.String()
+    registration_addres = fields.String()
+    mailing_addres = fields.String()
+    birth_day = fields.String()
+    sex = fields.Boolean()
+    home_phone = fields.String()
+    mobile_phone = fields.String()
+    citizenship = fields.String()
+    e_mail = fields.String()
+
+
+class UserBriefInfoSchema(Schema):
+    id = fields.Integer()
+    email = fields.String()
+
+
+class UserListSchema(Schema):
+    users = fields.Nested(UserBriefInfoSchema, many=True)
+
+
 class SensorDataSchema(Schema):
     time_stamp = fields.String(attribute='timestamp')
     value = fields.Dict()

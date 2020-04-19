@@ -3,8 +3,16 @@ from config import config
 from flask import request
 from flask_jwt_extended import jwt_required, create_access_token
 from flask_expects_json import expects_json
+
 from server.resources.base import BaseResource
-from server.database.schemas import SensorDataSchema, ResourceSchema
+from server.database.schemas import (
+	SensorDataSchema,
+	ResourceSchema,
+	RegisterSchema,
+	AuthSchema,
+	UserInfoSchema,
+	UserListSchema,
+)
 
 from server.resources.utils import provide_db_session, schematic_response
 
@@ -15,41 +23,45 @@ from server.validation.auth import schema as auth_schema
 
 
 class Registration(BaseResource):
-	@provide_db_session
 	@expects_json(registration_schema)
+	@provide_db_session
+	@schematic_response(RegisterSchema())
 	def post(self):
-		login = request.json['email']
+		login = request.json['login']
 		pwd = request.json['password'].encode('utf-8')
 
 		pwd_hash = bcrypt.hashpw(pwd, bcrypt.gensalt()).decode('utf-8')
 		UserManager(self.db_session).save_new(login, pwd_hash)
 
-		return {'token': create_access_token(identity={'email': login})}
+		return {'token': create_access_token(identity={'email': login})}, 201
 
 
 class Auth(BaseResource):
-	@provide_db_session
 	@expects_json(auth_schema)
+	@provide_db_session
+	@schematic_response(AuthSchema())
 	def post(self):
-		login = request.json['email']
+		login = request.json['login']
 		pwd = request.json['password'].encode('utf-8')
 
-		hash = UserManager(self.db_session).get_by_login(login).pwd_hash.encode('utf-8')
+		pwd_hash = UserManager(self.db_session).get_by_login(login).pwd_hash.encode('utf-8')
 
-		if bcrypt.checkpw(pwd, hash):
+		if bcrypt.checkpw(pwd, pwd_hash):
 			return {'token': create_access_token(identity={'email': login})}
 
-		raise ValueError('Incorrect password!')
+		return {'message': 'Incorrect password'}, 406
 
 
 class User(BaseResource):
 	@jwt_required
+	@schematic_response(UserInfoSchema())
 	def get(self):
 		return config['user_info']
 
 
 class Users(BaseResource):
 	@provide_db_session
+	@schematic_response(UserListSchema())
 	def get(self):
 		return UserManager(self.db_session).get_all()
 

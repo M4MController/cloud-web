@@ -102,12 +102,12 @@ class UserManager(BaseSqlManager):
 
     def save_new(self, login, pwd_hash):
         return self.create({
-            'username': login,
+            'login': login,
             'pwd_hash': pwd_hash
         })
 
     def get_by_login(self, login):
         try:
-            return self.session.query(self.model).filter_by(username=login).one()
+            return self.session.query(self.model).filter_by(login=login).one()
         except NoResultFound:
             raise ObjectNotFoundError(object='Record')
