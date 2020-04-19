@@ -3,6 +3,7 @@ import logging
 
 from flask import make_response, request
 from flask_jwt_extended import get_jwt_identity
+from jwt.exceptions import ExpiredSignatureError
 
 from server.errors import (
     BaseApiError,
@@ -32,11 +33,14 @@ def provide_db_session(func):
 
 
 def safe_handler(func):
-    def f(*args, **kwargs):
+    def f(self, *args, **kwargs):
         try:
-            return func(*args, **kwargs)
+            return func(self, *args, **kwargs)
         except Exception as e:
             logger.exception(str(e))
+
+            if isinstance(e, ExpiredSignatureError):
+                return self._flask.redirect('/sign_in', 307)
 
             if not isinstance(e, BaseApiError):
                 e = InternalServerError()
