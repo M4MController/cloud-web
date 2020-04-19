@@ -68,8 +68,7 @@ ALTER TABLE users OWNER TO m4m;
 
 CREATE TABLE IF NOT EXISTS users_info
 (
-  id SERIAL PRIMARY KEY,
-  user_id INTEGER REFERENCES users(id),
+  user_id INTEGER PRIMARY KEY REFERENCES users(id),
   family_name VARCHAR,
   username VARCHAR,
   second_name VARCHAR,

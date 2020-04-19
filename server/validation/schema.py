@@ -16,7 +16,7 @@ class AuthRequestSchema(BaseAuthSchema):
 
 class UserInfoRequestSchema(Schema):
 	family_name = fields.String()
-	name = fields.String(attribute='username')
+	name = fields.String()
 	second_name = fields.String()
 	date_receiving = fields.Integer()
 	issued_by = fields.String()

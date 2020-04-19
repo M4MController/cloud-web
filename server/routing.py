@@ -43,11 +43,12 @@ class Registration(BaseResource):
 	@provide_db_session
 	@schematic_request(RegisterRequestSchema())
 	@schematic_response(RegisterSchema())
-	def post(self, request_obj={}):
+	def post(self, request_obj=None):
 		login = request_obj['login']
 		pwd = request_obj['password'].encode('utf-8')
 
 		pwd_hash = bcrypt.hashpw(pwd, bcrypt.gensalt()).decode('utf-8')
+
 		user = UserManager(self.db_session).save_new(login, pwd_hash)
 		UserInfoManager(self.db_session).save_new(user.id)
 
@@ -59,7 +60,7 @@ class Auth(BaseResource):
 	@provide_db_session
 	@schematic_request(AuthRequestSchema())
 	@schematic_response(AuthSchema())
-	def post(self, request_obj={}):
+	def post(self, request_obj=None):
 		login = request_obj['login']
 		pwd = request_obj['password'].encode('utf-8')
 
@@ -76,7 +77,7 @@ class User(BaseResource):
 	@jwt_required
 	@provide_db_session
 	@schematic_response(UserInfoSchema())
-	@with_user_id
+	@with_user_id()
 	def get(self, user_id=None):
 		return UserInfoManager(self.db_session).get_by_user_id(user_id)
 

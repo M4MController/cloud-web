@@ -101,8 +101,7 @@ class User(Base):
 class UserInfo(Base):
     __tablename__ = 'users_info'
 
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    user_id = Column(Integer, ForeignKey('users.id'), primary_key=True, nullable=False)
     family_name = Column(String)
     name = Column(String, name='username')
     second_name = Column(String)
