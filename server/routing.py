@@ -2,7 +2,6 @@ import bcrypt
 from config import config
 from flask import request
 from flask_jwt_extended import jwt_required, create_access_token
-from flask_expects_json import expects_json
 
 from server.resources.base import BaseResource
 from server.database.schemas import (
@@ -14,21 +13,26 @@ from server.database.schemas import (
 	UserListSchema,
 )
 
-from server.resources.utils import provide_db_session, schematic_response
-
+from server.resources.utils import provide_db_session, schematic_response, schematic_request, safe_handler
 from server.database.managers import SensorManager, SensorDataManager, ObjectManager, ControllerManager, UserManager
 
-from server.validation.registration import schema as registration_schema
-from server.validation.auth import schema as auth_schema
+from server.validation.schema import (
+	RegisterRequestSchema,
+	AuthRequestSchema,
+)
+
+from server.errors import InvalidArgumentError
 
 
 class Registration(BaseResource):
-	@expects_json(registration_schema)
+	@safe_handler
 	@provide_db_session
+	@schematic_request(RegisterRequestSchema())
 	@schematic_response(RegisterSchema())
-	def post(self):
-		login = request.json['login']
-		pwd = request.json['password'].encode('utf-8')
+	def post(self, request_obj={}):
+		print('Request object: ', request_obj)
+		login = request_obj['login']
+		pwd = request_obj['password'].encode('utf-8')
 
 		pwd_hash = bcrypt.hashpw(pwd, bcrypt.gensalt()).decode('utf-8')
 		UserManager(self.db_session).save_new(login, pwd_hash)
@@ -37,19 +41,20 @@ class Registration(BaseResource):
 
 
 class Auth(BaseResource):
-	@expects_json(auth_schema)
+	@safe_handler
 	@provide_db_session
+	@schematic_request(AuthRequestSchema())
 	@schematic_response(AuthSchema())
-	def post(self):
-		login = request.json['login']
-		pwd = request.json['password'].encode('utf-8')
+	def post(self, request_obj={}):
+		login = request_obj['login']
+		pwd = request_obj['password'].encode('utf-8')
 
 		pwd_hash = UserManager(self.db_session).get_by_login(login).pwd_hash.encode('utf-8')
 
 		if bcrypt.checkpw(pwd, pwd_hash):
 			return {'token': create_access_token(identity={'email': login})}
 
-		return {'message': 'Incorrect password'}, 406
+		raise InvalidArgumentError(message='invalid password')
 
 
 class User(BaseResource):
@@ -60,6 +65,7 @@ class User(BaseResource):
 
 
 class Users(BaseResource):
+	@safe_handler
 	@provide_db_session
 	@schematic_response(UserListSchema())
 	def get(self):
@@ -74,6 +80,7 @@ class ObjectsResource(BaseResource):
 			last_value = data_manager.get_last_record(sensor.id)
 			sensor.last_value = last_value and last_value['value']
 
+	@safe_handler
 	@jwt_required
 	@provide_db_session
 	@schematic_response(ResourceSchema())
@@ -91,6 +98,7 @@ class ObjectsResource(BaseResource):
 
 
 class SensorDataResource(BaseResource):
+	@safe_handler
 	@jwt_required
 	@provide_db_session
 	@schematic_response(SensorDataSchema(many=True))
@@ -102,6 +110,7 @@ class SensorDataResource(BaseResource):
 
 
 class AllObjectsInfoResource(BaseResource):
+	@safe_handler
 	@jwt_required
 	@provide_db_session
 	@schematic_response(ResourceSchema())
@@ -118,6 +127,7 @@ class AllObjectsInfoResource(BaseResource):
 
 
 class SensorDataPrivateResource(BaseResource):
+	@safe_handler
 	@jwt_required
 	@provide_db_session
 	@schematic_response(SensorDataSchema())

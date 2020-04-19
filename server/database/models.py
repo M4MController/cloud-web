@@ -93,5 +93,5 @@ class User(Base):
     __tablename__ = 'users'
 
     id = Column(Integer, primary_key=True)
-    login = Column(String, nullable=False)
+    login = Column(String, nullable=False, unique=True)
     pwd_hash = Column(String, nullable=False)

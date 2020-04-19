@@ -9,6 +9,7 @@ class BaseApiError(Exception):
 
     def to_dict(self):
         return {
+            'status': self.STATUS,
             'title': self.TITLE,
             'detail': self.DETAIL.format(**self.kwargs),
         }
@@ -57,3 +58,16 @@ class ConflictError(BaseApiError):
 class InternalServerError(BaseApiError):
     STATUS = 500
     TITLE = 'Internal server error'
+
+
+class NotAcceptableError(BaseApiError):
+    STATUS = 406
+    TITLE = 'Not Acceptable'
+
+
+class ObjectExistsError(NotAcceptableError):
+    DETAIL = 'Unable to create {object} as property {property} should be unique but is already taken'
+
+
+class InvalidArgumentError(NotAcceptableError):
+    DETAIL = 'Invalid argument: {message}'

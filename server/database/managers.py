@@ -1,4 +1,4 @@
-from sqlalchemy.exc import InternalError
+from sqlalchemy.exc import InternalError, IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy import DateTime
 
@@ -10,7 +10,11 @@ from server.database.models import (
     User
 )
 
-from server.errors import ConflictError, ObjectNotFoundError
+from server.errors import (
+    ConflictError,
+    ObjectNotFoundError,
+    ObjectExistsError
+)
 from datetime import datetime
 
 time_field = 'timestamp'
@@ -27,6 +31,8 @@ class BaseSqlManager:
         try:
             self.session.add(obj)
             self.session.flush()
+        except IntegrityError:
+            raise ObjectExistsError(object='Record', property='Property')
         except InternalError:
             raise ConflictError()
 
