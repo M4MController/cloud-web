@@ -66,6 +66,27 @@ CREATE TABLE IF NOT EXISTS users
 );
 ALTER TABLE users OWNER TO m4m;
 
+CREATE TABLE IF NOT EXISTS users_info
+(
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES users(id),
+  family_name VARCHAR,
+  username VARCHAR,
+  second_name VARCHAR,
+  date_receiving INTEGER,
+  issued_by VARCHAR,
+  division_number VARCHAR,
+  registration_addres VARCHAR,
+  mailing_addres VARCHAR,
+  birth_day VARCHAR,
+  sex BOOLEAN,
+  home_phone VARCHAR,
+  mobile_phone VARCHAR,
+  citizenship VARCHAR,
+  e_mail VARCHAR
+);
+ALTER TABLE users_info OWNER TO m4m;
+
 INSERT INTO objects VALUES (
   1,
   'Mercedes'

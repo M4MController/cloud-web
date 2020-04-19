@@ -1,17 +1,22 @@
 from marshmallow import Schema, fields
 
 
-class RegisterSchema(Schema):
+class BaseAuthSchema(Schema):
     token = fields.String()
 
 
-class AuthSchema(Schema):
-    token = fields.String()
+class RegisterSchema(BaseAuthSchema):
+    pass
+
+
+class AuthSchema(BaseAuthSchema):
+    pass
 
 
 class UserInfoSchema(Schema):
+    id = fields.Integer()
     family_name = fields.String()
-    name = fields.String()
+    name = fields.String(attribute='username')
     second_name = fields.String()
     date_receiving = fields.Integer()
     issued_by = fields.String()

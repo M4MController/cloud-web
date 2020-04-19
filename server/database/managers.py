@@ -5,9 +5,10 @@ from sqlalchemy import DateTime
 from server.database.models import (
     Object,
     Controller,
-	Sensor,
-	SensorData,
-    User
+    Sensor,
+    SensorData,
+    User,
+    UserInfo,
 )
 
 from server.errors import (
@@ -116,4 +117,22 @@ class UserManager(BaseSqlManager):
         try:
             return self.session.query(self.model).filter_by(login=login).one()
         except NoResultFound:
-            raise ObjectNotFoundError(object='Record')
+            raise ObjectNotFoundError(object='User')
+
+
+class UserInfoManager(BaseSqlManager):
+    model = UserInfo
+
+    def get_by_user_id(self, user_id):
+        try:
+            return self.session.query(self.model).filter_by(user_id=user_id).one()
+        except NoResultFound:
+            raise ObjectNotFoundError(object='user_info')
+
+    def save_new(self, user_id):
+        return self.create({
+            'user_id': user_id
+        })
+
+    def update(self, user_id, info):
+        return self.session.query(self.model).filter_by(user_id=user_id).update(info)

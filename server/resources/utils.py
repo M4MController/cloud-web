@@ -2,6 +2,7 @@ import json
 import logging
 
 from flask import make_response, request
+from flask_jwt_extended import get_jwt_identity
 
 from server.errors import (
     BaseApiError,
@@ -36,10 +37,13 @@ def safe_handler(func):
             return func(*args, **kwargs)
         except Exception as e:
             logger.exception(str(e))
+
             if not isinstance(e, BaseApiError):
                 e = InternalServerError()
+
             result = e.to_dict()
             headers = {'Content-Type': 'application/json'}
+
             return make_response(
                 json.dumps(result),
                 result['status'],
@@ -80,6 +84,19 @@ def schematic_request(schema):
             if load_result.errors:
                 raise ValidationFailedError(load_result.errors)
             return func(*args, **kwargs, request_obj=load_result.data)
+
+        return wrapper
+
+    return decor
+
+
+def with_user_id(force_override=False):
+    def decor(func):
+        def wrapper(*args, **kwargs):
+            if force_override or 'user_id' not in kwargs or kwargs['user_id'] is None:
+                kwargs['user_id'] = get_jwt_identity()['id']
+
+            return func(*args, **kwargs)
 
         return wrapper
 

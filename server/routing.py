@@ -1,5 +1,4 @@
 import bcrypt
-from config import config
 from flask import request
 from flask_jwt_extended import jwt_required, create_access_token
 
@@ -13,12 +12,27 @@ from server.database.schemas import (
 	UserListSchema,
 )
 
-from server.resources.utils import provide_db_session, schematic_response, schematic_request, safe_handler
-from server.database.managers import SensorManager, SensorDataManager, ObjectManager, ControllerManager, UserManager
+from server.resources.utils import (
+	provide_db_session,
+	schematic_response,
+	schematic_request,
+	safe_handler,
+	with_user_id
+)
+
+from server.database.managers import (
+	SensorManager,
+	SensorDataManager,
+	ObjectManager,
+	ControllerManager,
+	UserManager,
+	UserInfoManager,
+)
 
 from server.validation.schema import (
 	RegisterRequestSchema,
 	AuthRequestSchema,
+	UserInfoRequestSchema,
 )
 
 from server.errors import InvalidArgumentError
@@ -30,14 +44,14 @@ class Registration(BaseResource):
 	@schematic_request(RegisterRequestSchema())
 	@schematic_response(RegisterSchema())
 	def post(self, request_obj={}):
-		print('Request object: ', request_obj)
 		login = request_obj['login']
 		pwd = request_obj['password'].encode('utf-8')
 
 		pwd_hash = bcrypt.hashpw(pwd, bcrypt.gensalt()).decode('utf-8')
-		UserManager(self.db_session).save_new(login, pwd_hash)
+		user = UserManager(self.db_session).save_new(login, pwd_hash)
+		UserInfoManager(self.db_session).save_new(user.id)
 
-		return {'token': create_access_token(identity={'email': login})}, 201
+		return {'token': create_access_token(identity={'email': login, 'id': user.id})}, 201
 
 
 class Auth(BaseResource):
@@ -49,19 +63,31 @@ class Auth(BaseResource):
 		login = request_obj['login']
 		pwd = request_obj['password'].encode('utf-8')
 
-		pwd_hash = UserManager(self.db_session).get_by_login(login).pwd_hash.encode('utf-8')
+		user = UserManager(self.db_session).get_by_login(login)
 
-		if bcrypt.checkpw(pwd, pwd_hash):
-			return {'token': create_access_token(identity={'email': login})}
+		if bcrypt.checkpw(pwd, user.pwd_hash.encode('utf-8')):
+			return {'token': create_access_token(identity={'email': login, 'id': user.id})}
 
 		raise InvalidArgumentError(message='invalid password')
 
 
 class User(BaseResource):
+	@safe_handler
 	@jwt_required
+	@provide_db_session
 	@schematic_response(UserInfoSchema())
-	def get(self):
-		return config['user_info']
+	@with_user_id
+	def get(self, user_id=None):
+		return UserInfoManager(self.db_session).get_by_user_id(user_id)
+
+	@safe_handler
+	@jwt_required
+	@provide_db_session
+	@schematic_request(UserInfoRequestSchema())
+	@schematic_response(UserInfoSchema())
+	@with_user_id(True)
+	def patch(self, user_id=None, request_obj=None):
+		return UserInfoManager(self.db_session).update(user_id, request_obj)
 
 
 class Users(BaseResource):
@@ -69,7 +95,7 @@ class Users(BaseResource):
 	@provide_db_session
 	@schematic_response(UserListSchema())
 	def get(self):
-		return UserManager(self.db_session).get_all()
+		return UserInfoManager(self.db_session).get_all()
 
 
 class ObjectsResource(BaseResource):
@@ -141,5 +167,6 @@ def register_routes(app):
 	app.register_route(ObjectsResource, 'objects', '/objects')
 	app.register_route(SensorDataResource, 'sensor_data', '/sensor/<int:sensor_id>/data')
 	app.register_route(SensorDataResource, 'sensor_data_private', '/private/sensor/<int:sensor_id>/data/add')
-	app.register_route(User, 'user_info', '/user/info')
+	app.register_route(User, 'user_info', '/user/info/<int:user_id>')
+	app.register_route(User, 'user_info_self', '/user/info')
 	app.register_route(Users, 'users_list', '/user/list')
