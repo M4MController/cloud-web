@@ -13,10 +13,10 @@ from server.database.managers import SensorManager, SensorDataManager, ObjectMan
 class Registration(BaseResource):
     @provide_db_session
     def post(self):
-        login = request.json['email'].encode('utf-8')
+        login = request.json['email']
         pwd = request.json['password'].encode('utf-8')
 
-        pwd_hash = bcrypt.hashpw(pwd, bcrypt.gensalt())
+        pwd_hash = bcrypt.hashpw(pwd, bcrypt.gensalt()).decode('utf-8')
         UserManager(self.db_session).save_new(login, pwd_hash)
 
         return {'token': create_access_token(identity={'email': login})}
@@ -25,12 +25,14 @@ class Registration(BaseResource):
 class Auth(BaseResource):
     @provide_db_session
     def post(self):
-        login = request.json['email'].encode('utf-8')
+        login = request.json['email']
         pwd = request.json['password'].encode('utf-8')
 
-        stored = UserManager(self.db_session).get_by_login(login)
+        hash = UserManager(self.db_session).get_by_login(login).pwd_hash.encode('utf-8')
 
-        if bcrypt.checkpw(pwd, stored.pwd_hash):
+        print(hash)
+
+        if bcrypt.checkpw(pwd, hash):
             return {'token': create_access_token(identity={'email': login})}
 
         raise ValueError('Incorrect password!')
@@ -65,7 +67,6 @@ class ObjectsResource(BaseResource):
         objects = ObjectManager(self.db_session).get_all()
         controllers = ControllerManager(self.db_session).get_all()
         self._insert_last_value(sensors)
-        print(sensors[-1].last_value)
 
         return {
             'objects': objects,
@@ -116,4 +117,4 @@ def register_routes(app):
     app.register_route(SensorDataResource, 'sensor_data', '/sensor/<int:sensor_id>/data')
     app.register_route(SensorDataResource, 'sensor_data_private', '/private/sensor/<int:sensor_id>/data/add')
     app.register_route(User, 'user_info', '/user/info')
-    app.register_route(Users, 'users_list', '/users/list')
+    app.register_route(Users, 'users_list', '/user/list')
