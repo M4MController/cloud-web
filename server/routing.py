@@ -96,7 +96,7 @@ class Users(BaseResource):
 	@provide_db_session
 	@schematic_response(UserListSchema())
 	def get(self):
-		return UserInfoManager(self.db_session).get_all()
+		return {'users': UserInfoManager(self.db_session).get_all(True)}
 
 
 class ObjectsResource(BaseResource):

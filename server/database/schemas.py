@@ -31,9 +31,14 @@ class UserInfoSchema(Schema):
     e_mail = fields.String()
 
 
+class UserBriefSchema(Schema):
+    login = fields.String()
+
+
 class UserBriefInfoSchema(Schema):
-    id = fields.Integer()
-    email = fields.String()
+    user_id = fields.Integer()
+    user = fields.Nested(UserBriefSchema)
+    name = fields.String()
 
 
 class UserListSchema(Schema):

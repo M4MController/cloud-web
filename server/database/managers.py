@@ -129,6 +129,9 @@ class UserInfoManager(BaseSqlManager):
         except NoResultFound:
             raise ObjectNotFoundError(object='user_info')
 
+    def get_all(self, with_login=False):
+        return self.session.query(self.model).join(UserInfo.user).all()
+
     def save_new(self, user_id):
         return self.create({
             'user_id': user_id

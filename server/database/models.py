@@ -116,3 +116,9 @@ class UserInfo(Base):
     mobile_phone = Column(String)
     citizenship = Column(String)
     e_mail = Column(String)
+
+    user = relationship(
+        'User',
+        uselist=False,
+        lazy='noload',
+    )
