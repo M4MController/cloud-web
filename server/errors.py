@@ -71,3 +71,17 @@ class ObjectExistsError(NotAcceptableError):
 
 class InvalidArgumentError(NotAcceptableError):
     DETAIL = 'Invalid argument: {message}'
+
+
+class NotAuthorizedError(BaseApiError):
+    STATUS = 401
+    TITLE = 'Unauthorized'
+    DETAIL = 'User is not authorized; Access forbidden'
+
+
+class TokenGoneOffError(NotAuthorizedError):
+    DETAIL = 'Token has gone off; Please, re-login'
+
+
+class InvalidTokenError(NotAuthorizedError):
+    DETAIL = 'Token is invalid or corrupted'

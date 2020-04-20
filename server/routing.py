@@ -1,6 +1,6 @@
 import bcrypt
 from flask import request
-from flask_jwt_extended import jwt_required, create_access_token
+from flask_jwt_extended import create_access_token
 
 from server.resources.base import BaseResource
 from server.database.schemas import (
@@ -16,8 +16,8 @@ from server.resources.utils import (
 	provide_db_session,
 	schematic_response,
 	schematic_request,
-	safe_handler,
-	with_user_id
+	with_user_id,
+	authorized,
 )
 
 from server.database.managers import (
@@ -39,7 +39,6 @@ from server.errors import InvalidArgumentError
 
 
 class Registration(BaseResource):
-	@safe_handler
 	@provide_db_session
 	@schematic_request(RegisterRequestSchema())
 	@schematic_response(RegisterSchema())
@@ -56,7 +55,6 @@ class Registration(BaseResource):
 
 
 class Auth(BaseResource):
-	@safe_handler
 	@provide_db_session
 	@schematic_request(AuthRequestSchema())
 	@schematic_response(AuthSchema())
@@ -73,16 +71,14 @@ class Auth(BaseResource):
 
 
 class User(BaseResource):
-	@safe_handler
-	@jwt_required
+	@authorized
 	@provide_db_session
 	@schematic_response(UserInfoSchema())
 	@with_user_id()
 	def get(self, user_id=None):
 		return UserInfoManager(self.db_session).get_by_user_id(user_id)
 
-	@safe_handler
-	@jwt_required
+	@authorized
 	@provide_db_session
 	@schematic_request(UserInfoRequestSchema())
 	@schematic_response(UserInfoSchema())
@@ -92,7 +88,6 @@ class User(BaseResource):
 
 
 class Users(BaseResource):
-	@safe_handler
 	@provide_db_session
 	@schematic_response(UserListSchema())
 	def get(self):
@@ -107,8 +102,7 @@ class ObjectsResource(BaseResource):
 			last_value = data_manager.get_last_record(sensor.id)
 			sensor.last_value = last_value and last_value['value']
 
-	@safe_handler
-	@jwt_required
+	@authorized
 	@provide_db_session
 	@schematic_response(ResourceSchema())
 	def get(self):
@@ -125,8 +119,7 @@ class ObjectsResource(BaseResource):
 
 
 class SensorDataResource(BaseResource):
-	@safe_handler
-	@jwt_required
+	@authorized
 	@provide_db_session
 	@schematic_response(SensorDataSchema(many=True))
 	def get(self, sensor_id):
@@ -137,8 +130,7 @@ class SensorDataResource(BaseResource):
 
 
 class AllObjectsInfoResource(BaseResource):
-	@safe_handler
-	@jwt_required
+	@authorized
 	@provide_db_session
 	@schematic_response(ResourceSchema())
 	def get(self):
@@ -154,8 +146,7 @@ class AllObjectsInfoResource(BaseResource):
 
 
 class SensorDataPrivateResource(BaseResource):
-	@safe_handler
-	@jwt_required
+	@authorized
 	@provide_db_session
 	@schematic_response(SensorDataSchema())
 	def post(self, sensor_id):

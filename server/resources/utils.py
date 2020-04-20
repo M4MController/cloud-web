@@ -2,14 +2,21 @@ import json
 import logging
 
 from flask import make_response, request
-from flask_jwt_extended import get_jwt_identity
-from jwt.exceptions import ExpiredSignatureError
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended.exceptions import NoAuthorizationError
+from jwt.exceptions import (
+    ExpiredSignatureError,
+    InvalidTokenError,
+)
 
 from server.errors import (
     BaseApiError,
     InternalServerError,
     ValidationFailedError,
     UnsupportedMediaTypeError,
+    TokenGoneOffError,
+    InvalidTokenError as M4MInvalidTokenError,
+    NotAuthorizedError
 )
 
 logger = logging.getLogger(__name__)
@@ -38,9 +45,6 @@ def safe_handler(func):
             return func(self, *args, **kwargs)
         except Exception as e:
             logger.exception(str(e))
-
-            if isinstance(e, ExpiredSignatureError):
-                return self._flask.redirect('/sign_in', 307)
 
             if not isinstance(e, BaseApiError):
                 e = InternalServerError()
@@ -103,5 +107,19 @@ def with_user_id(force_override=False):
             return func(*args, **kwargs)
 
         return wrapper
+
+    return decor
+
+
+def authorized(func):
+    def decor(*args, **kwargs):
+        try:
+            return jwt_required(func)(*args, **kwargs)
+        except NoAuthorizationError:
+            raise NotAuthorizedError
+        except ExpiredSignatureError:
+            raise TokenGoneOffError
+        except InvalidTokenError:
+            raise M4MInvalidTokenError
 
     return decor
