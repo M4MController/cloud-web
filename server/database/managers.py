@@ -1,6 +1,7 @@
 from sqlalchemy.exc import InternalError, IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy import DateTime
+from sqlalchemy.orm import joinedload
 
 from server.database.models import (
     Object,
@@ -130,7 +131,7 @@ class UserInfoManager(BaseSqlManager):
             raise ObjectNotFoundError(object='user_info')
 
     def get_all(self, with_login=False):
-        return self.session.query(self.model).join(UserInfo.user).all()
+        return self.session.query(self.model).options(joinedload(UserInfo.user)).all()
 
     def save_new(self, user_id):
         return self.create({

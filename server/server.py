@@ -13,13 +13,15 @@ class App:
     def __init__(self, config):
         self._config = config
         self._flask = Flask(__name__)
-
-        self._flask.config['JWT_SECRET_KEY'] = config['secret']
-        self._jwt = JWTManager(self._flask)
-
+        self._init_token_auth()
         self.db_engine = create_engine(config['database']['objects']['uri'])
 
         register_routes(self)
+
+    def _init_token_auth(self):
+        self._flask.config['JWT_SECRET_KEY'] = config['secret']
+        self._flask.config['JWT_ACCESS_TOKEN_EXPIRES'] = config['token_expires']
+        self._jwt = JWTManager(self._flask)
 
     def register_route(self, Resource, view, *endpoints):
         for endpoint in endpoints:
