@@ -1,15 +1,22 @@
-from sqlalchemy.exc import InternalError
+from sqlalchemy.exc import InternalError, IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy import DateTime
+from sqlalchemy.orm import joinedload
 
 from server.database.models import (
     Object,
     Controller,
-	  Sensor,
-	  SensorData,
+    Sensor,
+    SensorData,
+    User,
+    UserInfo,
 )
 
-from server.errors import ConflictError, ObjectNotFoundError
+from server.errors import (
+    ConflictError,
+    ObjectNotFoundError,
+    ObjectExistsError
+)
 from datetime import datetime
 
 time_field = 'timestamp'
@@ -26,6 +33,8 @@ class BaseSqlManager:
         try:
             self.session.add(obj)
             self.session.flush()
+        except IntegrityError:
+            raise ObjectExistsError(object='Record', property='Property')
         except InternalError:
             raise ConflictError()
 
@@ -94,3 +103,40 @@ class SensorDataManager(BaseSqlManager):
         return self.session.query(self.model.data) \
             .filter(self.model.sensor_id == sensor_id) \
             .order_by(self.model.id.desc()).first()[0]
+
+
+class UserManager(BaseSqlManager):
+    model = User
+
+    def save_new(self, login, pwd_hash):
+        return self.create({
+            'login': login,
+            'pwd_hash': pwd_hash
+        })
+
+    def get_by_login(self, login):
+        try:
+            return self.session.query(self.model).filter_by(login=login).one()
+        except NoResultFound:
+            raise ObjectNotFoundError(object='User')
+
+
+class UserInfoManager(BaseSqlManager):
+    model = UserInfo
+
+    def get_by_user_id(self, user_id):
+        try:
+            return self.session.query(self.model).filter_by(user_id=user_id).one()
+        except NoResultFound:
+            raise ObjectNotFoundError(object='user_info')
+
+    def get_all(self, with_login=False):
+        return self.session.query(self.model).options(joinedload(UserInfo.user)).all()
+
+    def save_new(self, user_id):
+        return self.create({
+            'user_id': user_id
+        })
+
+    def update(self, user_id, info):
+        return self.session.query(self.model).filter_by(user_id=user_id).update(info)

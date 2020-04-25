@@ -2,23 +2,8 @@
     host: '0.0.0.0',
     port: 5000,
 
-    user_token: "admin12345",
-    user_info: {
-        family_name: "Иванов",
-        name: "Иван",
-        second_name: "Иванович",
-        date_receiving: 156,
-        issued_by: "1961-06-16",
-        division_number: "DIVNUM",
-        registration_addres: "Улица Пушкина, Дом Колотушкина",
-        mailing_addres: "Улица Пушкина, Дом Колотушкина",
-        birth_day: "156",
-        sex: false,
-        home_phone: "111 555",
-        mobile_phone: "8 800 555 35 35",
-        citizenship: "Албания",
-        e_mail: "ml@gmail.com"
-    },
+    secret: "here comes secret for jwt",
+    token_expires: 1440 // time in minutes; can be set to false and never expire
 
     database: {
         objects: {

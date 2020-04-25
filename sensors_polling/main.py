@@ -9,9 +9,6 @@ polling_delay = 1
 print(cur_date(), "Power on\n")
 print("Current polling delay time: {}s".format(polling_delay))
 
-
-#redOn()
-
 #IMU START -> thread
 imu_ev = threading.Event()
 imu_t = threading.Thread(target=imu_connect, args=())
@@ -42,26 +39,26 @@ lat, lon = 0, 0
 #beep()
 
 try:
-    while True:
-        if obd_con.is_connected():
-            try:
-                data = obd_read(obd_con)
-                json_send(6, data)
-            except Exception as e:
-                print("Failed reading data from obd!", e)
+	while True:
+		if obd_con.is_connected():
+			try:
+				data = obd_read(obd_con)
+				json_send(6, data)
+			except Exception as e:
+				print("Failed reading data from obd!", e)
 
-        if gsm_con:
-            try:
-                lat, lon = gsm_getGPS(gsm_con)
-                json_send(7, {'lat': lat, 'lon': lon})
-            except:
-                print("Failed reading data from gps!")
+		if gsm_con:
+			try:
+				lat, lon = gsm_getGPS(gsm_con)
+				json_send(7, {'lat': lat, 'lon': lon})
+			except:
+				print("Failed reading data from gps!")
 
-        time.sleep(polling_delay)
+		time.sleep(polling_delay)
 except KeyboardInterrupt:
-    if gsm_con is not None:
-        gsm_con.close()
+	if gsm_con is not None:
+		gsm_con.close()
 finally:
-    imu_t.do_run = False
-    if gsm_con:
-        gsm_con.close()
+	imu_t.do_run = False
+	if gsm_con:
+		gsm_con.close()
