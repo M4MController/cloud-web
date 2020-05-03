@@ -17,8 +17,13 @@ polling_delay = int(os.environ.get('TIMEOUT', '1'))
 logger.info(cur_date(), "Power on\n")
 logger.info("Current polling delay time: {}s".format(polling_delay))
 
+#IMU START -> thread
+imu_ev = threading.Event()
+imu_t = threading.Thread(target=imu_connect, args=())
+imu_t.do_run = True
+imu_t.start()
+imu_ev.set()
 
-#redOn()
 #GSM START
 def get_gsm_con():
     return gsm_start()
@@ -76,10 +81,11 @@ try:
             except:
                 logger.info("Failed reading data from gps!")
 
-        time.sleep(polling_delay)
+		time.sleep(polling_delay)
 except KeyboardInterrupt:
     if not use_stubs and gsm_con is not None:
         gsm_con.close()
 finally:
+	imu_t.do_run = False
     if not use_stubs and gsm_con:
         gsm_con.close()

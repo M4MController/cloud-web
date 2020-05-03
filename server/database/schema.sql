@@ -1,10 +1,11 @@
-CREATE TABLE objects
+CREATE TABLE IF NOT EXISTS objects
 (
     id   SERIAL PRIMARY KEY,
     name VARCHAR NOT NULL
 );
+ALTER TABLE objects OWNER TO m4m;
 
-CREATE TABLE controllers
+CREATE TABLE IF NOT EXISTS controllers
 (
     id                SERIAL PRIMARY KEY,
     name              VARCHAR,
@@ -16,8 +17,9 @@ CREATE TABLE controllers
     deactivation_date DATE DEFAULT NULL,
     controller_type   INT  DEFAULT NULL
 );
+ALTER TABLE controllers OWNER TO m4m;
 
-CREATE TABLE sensors
+CREATE TABLE IF NOT EXISTS sensors
 (
     id                SERIAL PRIMARY KEY,
     name              VARCHAR NOT NULL,
@@ -27,8 +29,9 @@ CREATE TABLE sensors
     deactivation_date DATE DEFAULT NULL,
     sensor_type       INT  DEFAULT NULL
 );
+ALTER TABLE sensors OWNER TO m4m;
 
-CREATE TABLE sensor_data
+CREATE TABLE IF NOT EXISTS sensor_data
 (
     id                SERIAL PRIMARY KEY,
     sensor_id         INTEGER REFERENCES sensors(id),
@@ -36,6 +39,35 @@ CREATE TABLE sensor_data
     signer            BYTEA DEFAULT NULL,
     sign              BYTEA DEFAULT NULL
 );
+ALTER TABLE sensor_data OWNER TO m4m;
+
+CREATE TABLE IF NOT EXISTS users
+(
+  id SERIAL PRIMARY KEY,
+  login VARCHAR NOT NULL UNIQUE,
+  pwd_hash VARCHAR NOT NULL
+);
+ALTER TABLE users OWNER TO m4m;
+
+CREATE TABLE IF NOT EXISTS users_info
+(
+  user_id INTEGER PRIMARY KEY REFERENCES users(id),
+  family_name VARCHAR,
+  username VARCHAR,
+  second_name VARCHAR,
+  date_receiving INTEGER,
+  issued_by VARCHAR,
+  division_number VARCHAR,
+  registration_addres VARCHAR,
+  mailing_addres VARCHAR,
+  birth_day VARCHAR,
+  sex BOOLEAN,
+  home_phone VARCHAR,
+  mobile_phone VARCHAR,
+  citizenship VARCHAR,
+  e_mail VARCHAR
+);
+ALTER TABLE users_info OWNER TO m4m;
 
 INSERT INTO objects VALUES (
   1,

@@ -1,16 +1,23 @@
-from sqlalchemy.exc import InternalError
+from sqlalchemy.exc import InternalError, IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy import DateTime
+from sqlalchemy.orm import joinedload
 
 from server.database.models import (
     Object,
     Controller,
     Sensor,
-    SensorData
+    SensorData,
+    User,
+    UserInfo,
 )
 
-from server.errors import ConflictError, ObjectNotFoundError
-from datetime import datetime, timezone
+from server.errors import (
+    ConflictError,
+    ObjectNotFoundError,
+    ObjectExistsError
+)
+from datetime import datetime
 
 time_field = 'timestamp'
 
@@ -26,6 +33,8 @@ class BaseSqlManager:
         try:
             self.session.add(obj)
             self.session.flush()
+        except IntegrityError:
+            raise ObjectExistsError(object='Record', property='Property')
         except InternalError:
             raise ConflictError()
 
@@ -68,7 +77,7 @@ class SensorDataManager(BaseSqlManager):
         return s
 
     def get_sensor_data(self, sensor_id, time_from=None, field=None):
-        query = self.session.query(self.model).filter(self.model.sensor_id == sensor_id)
+        query = self.session.query(self.model.data).filter(self.model.sensor_id == sensor_id)
 
         if time_from is not None:
             try:
@@ -77,14 +86,18 @@ class SensorDataManager(BaseSqlManager):
             except ValueError as error:
                 print('from field has incorrect format: ', error, '; Expected: %Y-%m-%dT%H:%M:%S')
 
-        result = query.all()
-
         if field is not None:
-            result = list(filter(lambda x: field in x.data['value'], result))
-            for record in result:
-                record.data['value'] = {field: record.data['value'][field]}
+            if field == 'time_stamp':
+                field = time_field
 
-        return result
+            query = query.with_entities(self.model.data[time_field], self.model.data['value'][field])
+
+            if field == time_field:
+                return [{time_field: x[0]} for x in query.all()]
+
+            return [{time_field: x[0], 'value': {field: x[1]}} for x in query.all()]
+
+        return [x[0] for x in query.all()]
 
     def get_last_record(self, sensor_id):
         result = self.session.query(self.model.data) \
@@ -95,3 +108,40 @@ class SensorDataManager(BaseSqlManager):
             return None
 
         return result[0]
+
+
+class UserManager(BaseSqlManager):
+    model = User
+
+    def save_new(self, login, pwd_hash):
+        return self.create({
+            'login': login,
+            'pwd_hash': pwd_hash
+        })
+
+    def get_by_login(self, login):
+        try:
+            return self.session.query(self.model).filter_by(login=login).one()
+        except NoResultFound:
+            raise ObjectNotFoundError(object='User')
+
+
+class UserInfoManager(BaseSqlManager):
+    model = UserInfo
+
+    def get_by_user_id(self, user_id):
+        try:
+            return self.session.query(self.model).filter_by(user_id=user_id).one()
+        except NoResultFound:
+            raise ObjectNotFoundError(object='user_info')
+
+    def get_all(self, with_login=False):
+        return self.session.query(self.model).options(joinedload(UserInfo.user)).all()
+
+    def save_new(self, user_id):
+        return self.create({
+            'user_id': user_id
+        })
+
+    def update(self, user_id, info):
+        return self.session.query(self.model).filter_by(user_id=user_id).update(info)
