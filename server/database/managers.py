@@ -18,7 +18,7 @@ from server.errors import (
     ObjectNotFoundError,
     ObjectExistsError
 )
-from datetime import datetime
+from datetime import datetime, timezone
 
 time_field = 'timestamp'
 
@@ -69,16 +69,20 @@ class SensorDataManager(BaseSqlManager):
 
     def save_new(self, sensor_id, data):
         now = datetime.now()
+
+        if not self.session.query(Sensor).filter_by(id=sensor_id).scalar():
+            SensorManager(self.session).create({'id': sensor_id})
+
         s = SensorData(data={
             time_field: now.replace(tzinfo=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S"),
             'value': data,
         }, sensor_id=sensor_id)
         self.session.add(s)
-        self.session.commit()
+
         return s
 
     def get_sensor_data(self, sensor_id, time_from=None, field=None):
-        query = self.session.query(self.model.data).filter(self.model.sensor_id == sensor_id)
+        query = self.session.query(self.model).filter(self.model.sensor_id == sensor_id)
 
         if time_from is not None:
             try:
@@ -91,14 +95,15 @@ class SensorDataManager(BaseSqlManager):
             if field == 'time_stamp':
                 field = time_field
 
-            query = query.with_entities(self.model.data[time_field], self.model.data['value'][field])
+            query = query.filter(self.model.data['value'][field] != None)
 
-            if field == time_field:
-                return [{time_field: x[0]} for x in query.all()]
+            result = query.all()
+            for record in result:
+                record.data['value'] = {field: record.data['value'][field]}
 
-            return [{time_field: x[0], 'value': {field: x[1]}} for x in query.all()]
+            return result
 
-        return [x[0] for x in query.all()]
+        return query.all()
 
     def get_last_record(self, sensor_id):
         result = self.session.query(self.model.data) \

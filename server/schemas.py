@@ -65,15 +65,14 @@ class Base64Field(fields.Field):
         return base64.b64decode(value)
 
 
-class SensorDataRecordSchema(Schema):
-    time_stamp = fields.String(attribute='timestamp')
-    value = fields.Dict()
-
-
 class SensorDataSchema(Schema):
-    data = fields.Nested(SensorDataRecordSchema)
+    data = fields.Field()
     signer = Base64Field()
     sign = Base64Field()
+
+
+class SensorDataPostSchema(Schema):
+    value = fields.Field(required=True)
 
 
 class ObjectSchema(Schema):

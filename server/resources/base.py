@@ -23,8 +23,10 @@ class BaseResource(MethodView):
     def dispatch_request(self, *args, **kwargs):
         method = self.get_handler_method_or_raise()
         response = method(*args, **kwargs)
-        if isinstance(response, dict):
+        if isinstance(response, dict) or isinstance(response, list):
             response = jsonify(response)
+        elif isinstance(response, int):
+            response = ('', response)
         return response or ('', 204)
 
     def get_handler_method(self):

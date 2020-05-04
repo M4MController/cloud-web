@@ -4,12 +4,14 @@ from flask_jwt_extended import create_access_token
 
 from server.resources.base import BaseResource
 from server.schemas import (
-	SensorDataSchema,
+	SensorDataPostSchema,
 	ResourceSchema,
 	RegisterSchema,
 	AuthSchema,
 	UserInfoSchema,
-	UserListSchema, UserSocialTokensSchema,
+	UserListSchema,
+	UserSocialTokensSchema,
+	SensorDataSchema,
 )
 
 from server.resources.utils import (
@@ -140,10 +142,8 @@ class SensorDataResource(BaseResource):
 	@provide_db_session
 	@schematic_response(SensorDataSchema(many=True))
 	def get(self, sensor_id):
-		result = SensorDataManager(self.db_session)\
+		return SensorDataManager(self.db_session)\
 			.get_sensor_data(sensor_id, request.args.get('from'), request.args.get('field'))
-
-		return result
 
 
 class AllObjectsInfoResource(BaseResource):
@@ -163,11 +163,11 @@ class AllObjectsInfoResource(BaseResource):
 
 
 class SensorDataPrivateResource(BaseResource):
-	@authorized
 	@provide_db_session
-	@schematic_response(SensorDataSchema())
-	def post(self, sensor_id):
-		return SensorDataManager(self.db_session).save_new(sensor_id, request.json['sensor_data'])
+	@schematic_request(SensorDataPostSchema())
+	def post(self, sensor_id, request_obj):
+		SensorDataManager(self.db_session).save_new(sensor_id, request_obj['value'])
+		return 201
 
 
 def register_routes(app):
@@ -175,7 +175,6 @@ def register_routes(app):
 	app.register_route(Registration, 'sign_up', '/sign_up')
 	app.register_route(ObjectsResource, 'objects', '/objects')
 	app.register_route(SensorDataResource, 'sensor_data', '/sensor/<int:sensor_id>/data')
-	app.register_route(SensorDataPrivateResource, 'sensor_data_private', '/private/sensor/<int:sensor_id>/data/add')
-	app.register_route(User, 'user_info', '/user/info/<int:user_id>')
+	app.register_route(SensorDataPrivateResource, 'sensor_data_private', '/private/sensor/<int:sensor_id>/data')
 	app.register_route(User, 'user_info_self', '/user/info')
 	app.register_route(Users, 'users_list', '/user/list')
