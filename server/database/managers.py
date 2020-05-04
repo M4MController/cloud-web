@@ -10,6 +10,7 @@ from server.database.models import (
     SensorData,
     User,
     UserInfo,
+    UserSocialTokens,
 )
 
 from server.errors import (
@@ -114,10 +115,20 @@ class UserManager(BaseSqlManager):
     model = User
 
     def save_new(self, login, pwd_hash):
-        return self.create({
+        user = self.create({
             'login': login,
             'pwd_hash': pwd_hash
         })
+
+        UserInfoManager(self.session).create({
+            'user_id': user.id
+        })
+
+        UserSocialTokensManager(self.session).create({
+            'user_id': user.id
+        })
+
+        return user
 
     def get_by_login(self, login):
         try:
@@ -138,10 +149,9 @@ class UserInfoManager(BaseSqlManager):
     def get_all(self, with_login=False):
         return self.session.query(self.model).options(joinedload(UserInfo.user)).all()
 
-    def save_new(self, user_id):
-        return self.create({
-            'user_id': user_id
-        })
-
     def update(self, user_id, info):
         return self.session.query(self.model).filter_by(user_id=user_id).update(info)
+
+
+class UserSocialTokensManager(BaseSqlManager):
+    model = UserSocialTokens

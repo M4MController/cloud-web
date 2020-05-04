@@ -46,6 +46,11 @@ class UserBriefInfoSchema(Schema):
 class UserListSchema(Schema):
     users = fields.Nested(UserBriefInfoSchema, many=True)
 
+
+class UserSocialTokensSchema(Schema):
+    yandex_disk = fields.String()
+
+
 class Base64Field(fields.Field):
     _encoding = 'utf-8'
 

@@ -36,7 +36,7 @@ def json_send(sensor_id, data, send_to_server=True):
     except Exception as e:
         logger.info("Can not send data", e)
 
-    return requests.post(config.host + ':' + config.port + '/private/sensor/' + sensor_id + '/add', data={
+    return requests.post('http://backend:5000/private/sensor/{sensor_id}/add'.format(sensor_id=sensor_id), data={
         'timestamp': timestamp,
         'value': data
     })

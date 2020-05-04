@@ -69,6 +69,11 @@ CREATE TABLE IF NOT EXISTS users_info
 );
 ALTER TABLE users_info OWNER TO m4m;
 
+CREATE TABLE IF NOT EXISTS users_social_tokens (
+  user_id INTEGER PRIMARY KEY REFERENCES users(id),
+  yandex_disk VARCHAR
+);
+
 INSERT INTO objects VALUES (
   1,
   'Mercedes'

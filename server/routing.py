@@ -3,13 +3,13 @@ from flask import request
 from flask_jwt_extended import create_access_token
 
 from server.resources.base import BaseResource
-from server.database.schemas import (
+from server.schemas import (
 	SensorDataSchema,
 	ResourceSchema,
 	RegisterSchema,
 	AuthSchema,
 	UserInfoSchema,
-	UserListSchema,
+	UserListSchema, UserSocialTokensSchema,
 )
 
 from server.resources.utils import (
@@ -27,6 +27,7 @@ from server.database.managers import (
 	ControllerManager,
 	UserManager,
 	UserInfoManager,
+	UserSocialTokensManager,
 )
 
 from server.validation.schema import (
@@ -49,7 +50,6 @@ class Registration(BaseResource):
 		pwd_hash = bcrypt.hashpw(pwd, bcrypt.gensalt()).decode('utf-8')
 
 		user = UserManager(self.db_session).save_new(login, pwd_hash)
-		UserInfoManager(self.db_session).save_new(user.id)
 
 		return {'token': create_access_token(identity={'email': login, 'id': user.id})}, 201
 
@@ -85,6 +85,23 @@ class User(BaseResource):
 	@with_user_id(True)
 	def patch(self, user_id=None, request_obj=None):
 		return UserInfoManager(self.db_session).update(user_id, request_obj)
+
+
+class UserTokens(BaseResource):
+	@authorized
+	@provide_db_session
+	@schematic_response(UserSocialTokensSchema())
+	@with_user_id()
+	def get(self, user_id=None):
+		return UserSocialTokensManager(self.db_session).get_by_user_id(user_id)
+
+	@authorized
+	@provide_db_session
+	@schematic_request(UserSocialTokensSchema())
+	@schematic_response(UserSocialTokensSchema())
+	@with_user_id(True)
+	def patch(self, user_id=None, request_obj=None):
+		return UserSocialTokensManager(self.db_session).update(user_id, request_obj)
 
 
 class Users(BaseResource):
@@ -158,7 +175,7 @@ def register_routes(app):
 	app.register_route(Registration, 'sign_up', '/sign_up')
 	app.register_route(ObjectsResource, 'objects', '/objects')
 	app.register_route(SensorDataResource, 'sensor_data', '/sensor/<int:sensor_id>/data')
-	app.register_route(SensorDataResource, 'sensor_data_private', '/private/sensor/<int:sensor_id>/data/add')
+	app.register_route(SensorDataPrivateResource, 'sensor_data_private', '/private/sensor/<int:sensor_id>/data/add')
 	app.register_route(User, 'user_info', '/user/info/<int:user_id>')
 	app.register_route(User, 'user_info_self', '/user/info')
 	app.register_route(Users, 'users_list', '/user/list')

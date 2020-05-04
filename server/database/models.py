@@ -125,3 +125,16 @@ class UserInfo(Base):
         uselist=False,
         lazy='noload',
     )
+
+
+class UserSocialTokens(Base):
+    __tablename__ = 'users_social_tokens'
+
+    user_id = Column(Integer, ForeignKey('users.id'), primary_key=True, nullable=False)
+    yandex_disk = Column(String)
+
+    user = relationship(
+        'User',
+        uselist=False,
+        lazy='noload',
+    )
