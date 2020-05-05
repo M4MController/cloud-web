@@ -56,7 +56,7 @@ class Controller(Base):
 class Sensor(Base):
     __tablename__ = 'sensors'
 
-    id = Column(Integer, primary_key=True)
+    id = Column(String(32), nullable=False, primary_key=True)
     name = Column(String, nullable=False)
     activation_date = Column(DateTime(timezone=False))
     deactivation_date = Column(DateTime(timezone=False))

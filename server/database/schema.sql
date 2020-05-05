@@ -21,7 +21,7 @@ ALTER TABLE controllers OWNER TO m4m;
 
 CREATE TABLE IF NOT EXISTS sensors
 (
-    id                SERIAL PRIMARY KEY,
+    id                CHAR(32) UNIQUE NOT NULL PRIMARY KEY,
     name              VARCHAR NOT NULL,
     controller_id     INT REFERENCES controllers (id),
     activation_date   DATE DEFAULT NULL,
@@ -34,7 +34,7 @@ ALTER TABLE sensors OWNER TO m4m;
 CREATE TABLE IF NOT EXISTS sensor_data
 (
     id                SERIAL PRIMARY KEY,
-    sensor_id         INTEGER REFERENCES sensors(id),
+    sensor_id         CHAR(32) NOT NULL REFERENCES sensors(id),
     data              JSON NOT NULL,
     signer            BYTEA DEFAULT NULL,
     sign              BYTEA DEFAULT NULL
@@ -87,24 +87,4 @@ INSERT INTO controllers VALUES (
   NULL,
   NULL,
   5
-);
-
-INSERT INTO sensors VALUES (
-  1,
-  'OBD',
-  1,
-  NULL,
-  NULL,
-  NULL,
-  5
-);
-
-INSERT INTO sensors VALUES (
-  2,
-  'GPS',
-  1,
-  NULL,
-  NULL,
-  NULL,
-  6
 );

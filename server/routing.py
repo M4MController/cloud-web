@@ -1,6 +1,7 @@
 import bcrypt
 from flask import request
 from flask_jwt_extended import create_access_token
+from marshmallow import Schema, fields
 
 from server.resources.base import BaseResource
 from server.schemas import (
@@ -162,6 +163,19 @@ class AllObjectsInfoResource(BaseResource):
         }
 
 
+class SensorPrivateResource(BaseResource):
+    class Schema(Schema):
+        name = fields.String(required=False)
+        status = fields.Integer(default=1)
+        sensor_type = fields.Integer(required=True)
+
+    @provide_db_session
+    @schematic_request(Schema())
+    def post(self, sensor_id, request_obj):
+        SensorManager(self.db_session).create_or_update(sensor_id, request_obj)
+        return 201
+
+
 class SensorDataPrivateResource(BaseResource):
     @provide_db_session
     @schematic_request(SensorDataPostSchema())
@@ -174,8 +188,9 @@ def register_routes(app):
     app.register_route(Auth, 'sign_in', '/sign_in')
     app.register_route(Registration, 'sign_up', '/sign_up')
     app.register_route(ObjectsResource, 'objects', '/objects')
-    app.register_route(SensorDataResource, 'sensor_data', '/sensor/<int:sensor_id>/data')
-    app.register_route(SensorDataPrivateResource, 'sensor_data_private', '/private/sensor/<int:sensor_id>/data')
+    app.register_route(SensorDataResource, 'sensor_data', '/sensor/<string:sensor_id>/data')
+    app.register_route(SensorPrivateResource, 'sensor_private', '/private/sensor/<string:sensor_id>/register')
+    app.register_route(SensorDataPrivateResource, 'sensor_data_private', '/private/sensor/<string:sensor_id>/data')
     app.register_route(User, 'user_info_self', '/user/info')
     app.register_route(Users, 'users_list', '/user/list')
     app.register_route(UserTokens, 'user_social_tokens', '/user_social_tokens')
