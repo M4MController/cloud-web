@@ -178,3 +178,4 @@ def register_routes(app):
 	app.register_route(SensorDataPrivateResource, 'sensor_data_private', '/private/sensor/<int:sensor_id>/data')
 	app.register_route(User, 'user_info_self', '/user/info')
 	app.register_route(Users, 'users_list', '/user/list')
+	app.register_route(UserTokens, 'user_social_tokens', '/user_social_tokens')
