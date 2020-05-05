@@ -160,3 +160,9 @@ class UserInfoManager(BaseSqlManager):
 
 class UserSocialTokensManager(BaseSqlManager):
     model = UserSocialTokens
+
+    def get_by_user_id(self, user_id: int) -> UserInfo:
+        return self.session.query(self.model).filter_by(user_id=user_id).one()
+
+    def update(self, user_id: int, data: dict):
+        return self.session.query(self.model).filter_by(user_id=user_id).update(data)
