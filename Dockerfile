@@ -4,7 +4,7 @@ MAINTAINER Eduard Asriyan <ed-asriyan@protonmail.com>
 WORKDIR /application
 
 ADD requirements.txt .
-RUN pip3 install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # for testing
 ADD scripts/db_fill_random.py db_fill_random.py
@@ -14,4 +14,4 @@ ADD config/__init__.py ./config/__init__.py
 ADD config/config.hjson ./config/config.hjson
 ADD start.py .
 
-CMD python3 ./start.py
+CMD python start.py
