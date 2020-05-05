@@ -1,4 +1,5 @@
 from sqlalchemy import (
+    Boolean,
     Column,
     DateTime,
     ForeignKey,
@@ -87,6 +88,53 @@ class SensorData(Base):
 
     sensor = relationship(
         'Sensor',
+        uselist=False,
+        lazy='noload',
+    )
+
+
+class User(Base):
+    __tablename__ = 'users'
+
+    id = Column(Integer, primary_key=True)
+    login = Column(String, nullable=False, unique=True)
+    pwd_hash = Column(String, nullable=False)
+
+
+class UserInfo(Base):
+    __tablename__ = 'users_info'
+
+    user_id = Column(Integer, ForeignKey('users.id'), primary_key=True, nullable=False)
+    family_name = Column(String)
+    name = Column(String, name='username')
+    second_name = Column(String)
+    date_receiving = Column(Integer)
+    issued_by = Column(String)
+    division_number = Column(String)
+    registration_addres = Column(String)
+    mailing_addres = Column(String)
+    birth_day = Column(String)
+    sex = Column(Boolean)
+    home_phone = Column(String)
+    mobile_phone = Column(String)
+    citizenship = Column(String)
+    e_mail = Column(String)
+
+    user = relationship(
+        'User',
+        uselist=False,
+        lazy='noload',
+    )
+
+
+class UserSocialTokens(Base):
+    __tablename__ = 'users_social_tokens'
+
+    user_id = Column(Integer, ForeignKey('users.id'), primary_key=True, nullable=False)
+    yandex_disk = Column(String)
+
+    user = relationship(
+        'User',
         uselist=False,
         lazy='noload',
     )
