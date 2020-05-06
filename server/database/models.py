@@ -119,6 +119,7 @@ class UserInfo(Base):
     mobile_phone = Column(String)
     citizenship = Column(String)
     e_mail = Column(String)
+    encrypt_key = Column(String)
 
     user = relationship(
         'User',
