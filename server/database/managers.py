@@ -63,18 +63,34 @@ class ControllerManager(BaseSqlManager):
 class SensorManager(BaseSqlManager):
     model = Sensor
 
+    default_names = {
+        5: 'OBD',
+        6: 'GPS',
+    }
+
+    def create_or_update(self, id, data):
+        query = self.session.query(self.model).filter_by(id=id)
+        if query.scalar():
+            query.update(data)
+        else:
+            name = data.pop('name', self.default_names[data['sensor_type']])
+            self.session.add(
+                Sensor(
+                    id=id,
+                    name=name,
+                    activation_date=datetime.now(),
+                    controller_id=1,
+                    **data,
+                ),
+            )
+
 
 class SensorDataManager(BaseSqlManager):
     model = SensorData
 
     def save_new(self, sensor_id, data):
-        now = datetime.now()
-
-        if not self.session.query(Sensor).filter_by(id=sensor_id).scalar():
-            SensorManager(self.session).create({'id': sensor_id})
-
         s = SensorData(data={
-            time_field: now.replace(tzinfo=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S"),
+            time_field: datetime.now().replace(tzinfo=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S"),
             'value': data,
         }, sensor_id=sensor_id)
         self.session.add(s)

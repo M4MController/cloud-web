@@ -93,7 +93,7 @@ class ControllerSchema(Schema):
 
 
 class SensorSchema(Schema):
-    id = fields.Integer()
+    id = fields.String()
     name = fields.String()
     status = fields.Integer()
     last_value = fields.Dict(allow_none=True)
