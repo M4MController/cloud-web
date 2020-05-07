@@ -43,10 +43,6 @@ class UserBriefInfoSchema(Schema):
     name = fields.String()
 
 
-class UserListSchema(Schema):
-    users = fields.Nested(UserBriefInfoSchema, many=True)
-
-
 class UserSocialTokensSchema(Schema):
     yandex_disk = fields.String()
 

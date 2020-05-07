@@ -87,9 +87,14 @@ class UserManager(BaseSqlManager):
     model = User
 
     def save_new(self, login, pwd_hash):
+        _object = ObjectManager(self.session).create({
+            'name': 'default',
+        })
+
         user = self.create({
             'login': login,
-            'pwd_hash': pwd_hash
+            'pwd_hash': pwd_hash,
+            'object_id': _object.id,
         })
 
         UserInfoManager(self.session).create({
