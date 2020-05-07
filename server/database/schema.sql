@@ -31,16 +31,6 @@ CREATE TABLE IF NOT EXISTS sensors
 );
 ALTER TABLE sensors OWNER TO m4m;
 
-CREATE TABLE IF NOT EXISTS sensor_data
-(
-    id                SERIAL PRIMARY KEY,
-    sensor_id         CHAR(32) NOT NULL REFERENCES sensors(id),
-    data              JSON NOT NULL,
-    signer            BYTEA DEFAULT NULL,
-    sign              BYTEA DEFAULT NULL
-);
-ALTER TABLE sensor_data OWNER TO m4m;
-
 CREATE TABLE IF NOT EXISTS users
 (
   id SERIAL PRIMARY KEY,

@@ -3,13 +3,11 @@ from sqlalchemy import (
     Column,
     DateTime,
     ForeignKey,
-    LargeBinary,
     Integer,
     String
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.dialects.postgresql import JSON
 
 Base = declarative_base()
 
@@ -67,27 +65,6 @@ class Sensor(Base):
     # one-to-many relation
     controller = relationship(
         'Controller',
-        uselist=False,
-        lazy='noload',
-    )
-    sensor_data = relationship(
-        'SensorData',
-        uselist=True,
-        lazy='noload'
-    )
-
-
-class SensorData(Base):
-    __tablename__ = 'sensor_data'
-
-    id = Column(Integer, primary_key=True)
-    sensor_id = Column(Integer, ForeignKey('sensors.id'), nullable=False)
-    data = Column(JSON, nullable=False)
-    sign = Column(LargeBinary)
-    signer = Column(LargeBinary)
-
-    sensor = relationship(
-        'Sensor',
         uselist=False,
         lazy='noload',
     )

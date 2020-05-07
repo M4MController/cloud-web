@@ -1,13 +1,11 @@
 from sqlalchemy.exc import InternalError, IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
-from sqlalchemy import DateTime
 from sqlalchemy.orm import joinedload
 
 from server.database.models import (
     Object,
     Controller,
     Sensor,
-    SensorData,
     User,
     UserInfo,
     UserSocialTokens,
@@ -18,7 +16,7 @@ from server.errors import (
     ObjectNotFoundError,
     ObjectExistsError
 )
-from datetime import datetime, timezone
+from datetime import datetime
 
 time_field = 'timestamp'
 
@@ -83,53 +81,6 @@ class SensorManager(BaseSqlManager):
                     **data,
                 ),
             )
-
-
-class SensorDataManager(BaseSqlManager):
-    model = SensorData
-
-    def save_new(self, sensor_id, data):
-        s = SensorData(data={
-            time_field: datetime.now().replace(tzinfo=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S"),
-            'value': data,
-        }, sensor_id=sensor_id)
-        self.session.add(s)
-
-        return s
-
-    def get_sensor_data(self, sensor_id, time_from=None, field=None):
-        query = self.session.query(self.model).filter(self.model.sensor_id == sensor_id)
-
-        if time_from is not None:
-            try:
-                from_date = datetime.strptime(time_from, '%Y-%m-%dT%H:%M:%S')
-                query = query.filter(self.model.data[time_field].astext.cast(DateTime) > from_date)
-            except ValueError as error:
-                print('from field has incorrect format: ', error, '; Expected: %Y-%m-%dT%H:%M:%S')
-
-        if field is not None:
-            if field == 'time_stamp':
-                field = time_field
-
-            query = query.filter(self.model.data['value'][field] != None)
-
-            result = query.all()
-            for record in result:
-                record.data['value'] = {field: record.data['value'][field]}
-
-            return result
-
-        return query.all()
-
-    def get_last_record(self, sensor_id):
-        result = self.session.query(self.model.data) \
-            .filter(self.model.sensor_id == sensor_id) \
-            .order_by(self.model.id.desc()).first()
-
-        if result is None:
-            return None
-
-        return result[0]
 
 
 class UserManager(BaseSqlManager):
