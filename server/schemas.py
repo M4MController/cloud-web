@@ -66,16 +66,6 @@ class Base64Field(fields.Field):
         return base64.b64decode(value)
 
 
-class SensorDataSchema(Schema):
-    data = fields.Field()
-    signer = Base64Field()
-    sign = Base64Field()
-
-
-class SensorDataPostSchema(Schema):
-    value = fields.Field(required=True)
-
-
 class ObjectSchema(Schema):
     id = fields.Integer()
     name = fields.String()
@@ -97,7 +87,6 @@ class SensorSchema(Schema):
     id = fields.String()
     name = fields.String()
     status = fields.Integer()
-    last_value = fields.Dict(allow_none=True)
     type = fields.Integer(attribute='sensor_type')
     controller = fields.Integer(attribute='controller_id')
 
