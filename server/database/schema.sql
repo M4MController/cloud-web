@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS objects
 (
     id   SERIAL PRIMARY KEY,
     name VARCHAR NOT NULL,
-    user_id INTEGER PRIMARY KEY REFERENCES users(id),
+    user_id INTEGER PRIMARY KEY REFERENCES users(id)
 );
 ALTER TABLE objects OWNER TO m4m;
 
