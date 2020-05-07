@@ -87,7 +87,7 @@ class User(Base):
 	objects = relationship(
 		'Object',
 		uselist=True,
-		lazy='nolad',
+		lazy='noload',
 	)
 
 
