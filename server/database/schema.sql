@@ -55,8 +55,7 @@ CREATE TABLE IF NOT EXISTS users_info
   home_phone VARCHAR,
   mobile_phone VARCHAR,
   citizenship VARCHAR,
-  e_mail VARCHAR,
-  encrypt_key VARCHAR
+  e_mail VARCHAR
 );
 ALTER TABLE users_info OWNER TO m4m;
 
