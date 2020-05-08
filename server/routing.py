@@ -1,4 +1,5 @@
 import bcrypt
+import itertools
 from flask_jwt_extended import create_access_token
 
 from server.resources.base import BaseResource
@@ -105,15 +106,17 @@ class ObjectsResource(BaseResource):
     @authorized
     @provide_db_session
     @schematic_response(ResourceSchema())
-    def get(self):
-        sensors = SensorManager(self.db_session).get_all()
-        objects = ObjectManager(self.db_session).get_all()
-        controllers = ControllerManager(self.db_session).get_all()
+    @with_user_id(True)
+    def get(self, user_id=None):
+        # sensors = SensorManager(self.db_session).get_all()
+        objects = ObjectManager(self.db_session).get_all_for_user(user_id)
+        controllers = list(itertools.chain([obj.controllers for obj in objects]))
+        # controllers = ControllerManager(self.db_session).get_all()
 
         return {
             'objects': objects,
             'controllers': controllers,
-            'sensors': sensors,
+            'sensors': [],
         }
 
 
