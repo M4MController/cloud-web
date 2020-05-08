@@ -3,7 +3,7 @@ version: '3'
 services:
     database:
         build:
-            context: https://github.com/M4MController/cloud-web.git
+            context: ./
             dockerfile: Dockerfile-db
         environment:
             POSTGRES_USER: "m4m"
@@ -14,7 +14,7 @@ services:
             - 5432:5432
     backend:
         build:
-            context: https://github.com/M4MController/cloud-web.git#develop
+            context: ./
             dockerfile: Dockerfile
         ports:
             - 5000:5000
