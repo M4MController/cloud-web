@@ -110,7 +110,7 @@ class ObjectsResource(BaseResource):
     def get(self, user_id=None):
         # sensors = SensorManager(self.db_session).get_all()
         objects = ObjectManager(self.db_session).get_all_for_user(user_id)
-        controllers = list(itertools.chain([obj.controllers for obj in objects]))
+        controllers = list(itertools.chain(*[obj.controllers for obj in objects]))
         # controllers = ControllerManager(self.db_session).get_all()
 
         return {
