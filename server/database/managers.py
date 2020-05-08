@@ -54,7 +54,11 @@ class ObjectManager(BaseSqlManager):
 	model = Object
 
 	def get_all_for_user(self, user_id):
-		return self.session.query(self.model).filter_by(user_id=user_id).options(joinedload(Object.controllers)).all()
+		return self.session.query(self.model)\
+			.filter_by(user_id=user_id)\
+			.options(joinedload(Object.controllers))\
+			.options(joinedload(Object.controllers.sensors))\
+			.all()
 
 
 class ControllerManager(BaseSqlManager):
