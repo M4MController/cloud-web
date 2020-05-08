@@ -64,18 +64,3 @@ CREATE TABLE IF NOT EXISTS users_social_tokens (
   user_id INTEGER PRIMARY KEY REFERENCES users(id),
   yandex_disk VARCHAR
 );
-
-INSERT INTO objects VALUES (
-  1,
-  'Mercedes'
-);
-
-INSERT INTO controllers VALUES (
-  1,
-  'OBD',
-  1,
-  NULL,
-  NULL,
-  NULL,
-  5
-);
