@@ -108,15 +108,14 @@ class ObjectsResource(BaseResource):
     @schematic_response(ResourceSchema())
     @with_user_id(True)
     def get(self, user_id=None):
-        # sensors = SensorManager(self.db_session).get_all()
         objects = ObjectManager(self.db_session).get_all_for_user(user_id)
         controllers = list(itertools.chain(*[obj.controllers for obj in objects]))
-        # controllers = ControllerManager(self.db_session).get_all()
+        sensors = list(itertools.chain(*[ctrlr.sensors for ctrlr in controllers]))
 
         return {
             'objects': objects,
             'controllers': controllers,
-            'sensors': [],
+            'sensors': sensors,
         }
 
 
