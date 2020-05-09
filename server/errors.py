@@ -85,3 +85,12 @@ class TokenGoneOffError(NotAuthorizedError):
 
 class InvalidTokenError(NotAuthorizedError):
     DETAIL = 'Token is invalid or corrupted'
+
+
+class NotAllowedError(BaseApiError):
+    STATUS = 405
+    TITLE = 'Not Allowed'
+
+
+class UserNoAccess(NotAllowedError):
+    DETAIL = 'You have no access'
