@@ -49,15 +49,36 @@ class BaseSqlManager:
 		except NoResultFound:
 			raise ObjectNotFoundError(object='Record')
 
+	def delete(self, id_):
+		self.session.query(self.model).filter_by(id=id_).delete()
+
 
 class ObjectManager(BaseSqlManager):
 	model = Object
 
-	def get_all_for_user(self, user_id):
+	def get_all_for_user(self, user_id: int):
 		return self.session.query(self.model)\
 			.filter_by(user_id=user_id)\
 			.options(joinedload(Object.controllers).joinedload(Controller.sensors))\
 			.all()
+
+	def get_by_id_for_user(self, object_id: int, user_id: int):
+		return self.session.query(self.model)\
+			.filter_by(user_id=user_id)\
+			.filter_by(id=object_id)\
+			.one()
+
+	def update_for_user(self, object_id: int, user_id: int, data: dict):
+		return self.session.query(self.model)\
+			.filter_by(id=object_id)\
+			.filter_by(user_id=user_id)\
+			.update(data)
+
+	def delete_for_user(self, object_id: int, user_id: int):
+		return self.session.query(self.model)\
+			.filter_by(id=object_id)\
+			.filter_by(user_id=user_id)\
+			.delete()
 
 
 class ControllerManager(BaseSqlManager):

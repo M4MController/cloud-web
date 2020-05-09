@@ -29,3 +29,7 @@ class UserInfoRequestSchema(Schema):
 	mobile_phone = fields.String()
 	citizenship = fields.String()
 	e_mail = fields.String()
+
+
+class ObjectRequestSchema(Schema):
+	name = fields.String()
