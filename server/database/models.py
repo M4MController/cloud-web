@@ -90,6 +90,12 @@ class User(Base):
 		lazy='noload',
 	)
 
+	social_tokens = relationship(
+		'UserSocialTokens',
+		uselist=False,
+		lazy='noload',
+	)
+
 
 class UserInfo(Base):
 	__tablename__ = 'users_info'
