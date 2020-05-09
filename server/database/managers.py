@@ -84,6 +84,26 @@ class ObjectManager(BaseSqlManager):
 class ControllerManager(BaseSqlManager):
 	model = Controller
 
+	def get_for_user(self, controller_id: int, user_id: int):
+		return self.session.query(self.model)\
+			.join(Controller.object)\
+			.filter_by(id=controller_id)\
+			.filter_by(user_id=user_id).one()
+
+	def delete_for_user(self, controller_id: int, user_id: int):
+		self.session.query(self.model)\
+			.join(Controller.object)\
+			.filter_by(id=controller_id)\
+			.filter_by(user_id=user_id)\
+			.delete()
+
+	def update_for_user(self, controller_id: int, user_id: int, data: dict):
+		return self.session.query(self.model)\
+			.join(Controller.object)\
+			.filter_by(id=controller_id)\
+			.filter_by(user_id=user_id)\
+			.update(data)
+
 
 class SensorManager(BaseSqlManager):
 	model = Sensor

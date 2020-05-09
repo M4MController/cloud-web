@@ -10,6 +10,7 @@ from server.schemas import (
 	UserInfoSchema,
 	UserSocialTokensSchema,
 	ObjectSchema,
+	ControllerSchema,
 )
 
 from server.resources.utils import (
@@ -22,6 +23,7 @@ from server.resources.utils import (
 
 from server.database.managers import (
 	ObjectManager,
+	ControllerManager,
 	UserManager,
 	UserInfoManager,
 	UserSocialTokensManager,
@@ -119,7 +121,7 @@ class ObjectsResource(BaseResource):
 		}
 
 
-class ObjectResource(BaseResource):
+class ObjectCResource(BaseResource):
 	@authorized
 	@provide_db_session
 	@schematic_response(ObjectSchema())
@@ -132,7 +134,7 @@ class ObjectResource(BaseResource):
 		})
 
 
-class ObjectUpdateResource(BaseResource):
+class ObjectRUDResource(BaseResource):
 	@authorized
 	@provide_db_session
 	@with_user_id(True)
@@ -157,11 +159,46 @@ class ObjectUpdateResource(BaseResource):
 		return ObjectManager(self.db_session).update_for_user(object_id, user_id, request_obj)
 
 
+class ControllerCResource(BaseResource):
+	@authorized
+	@provide_db_session
+	@schematic_request(ControllerSchema())
+	@schematic_response(ControllerSchema())
+	@with_user_id(True)
+	def post(self, user_id, request_obj):
+		pass
+
+
+class ControllerRUDResource(BaseResource):
+	@authorized
+	@provide_db_session
+	@with_user_id(True)
+	def delete(self, controller_id, user_id=None):
+		ControllerManager(self.db_session).delete_for_user(controller_id, user_id)
+
+		return 200
+
+	@authorized
+	@provide_db_session
+	@schematic_response(ControllerSchema())
+	@with_user_id(True)
+	def get(self, controller_id, user_id=None):
+		return ControllerManager(self.db_session).get_for_user(controller_id, user_id)
+
+	@authorized
+	@provide_db_session
+	@with_user_id(True)
+	def patch(self, controller_id, user_id=None):
+		pass
+
+
 def register_routes(app):
 	app.register_route(Auth, 'sign_in', '/sign_in')
 	app.register_route(Registration, 'sign_up', '/sign_up')
 	app.register_route(ObjectsResource, 'objects', '/objects')
-	app.register_route(ObjectResource, 'create_object', '/object')
-	app.register_route(ObjectUpdateResource, 'retrieve_update_delete_object', '/object/<int:object_id>')
+	app.register_route(ObjectCResource, 'create_object', '/object')
+	app.register_route(ObjectRUDResource, 'retrieve_update_delete_object', '/object/<int:object_id>')
+	app.register_route(ControllerCResource, 'create_controller', '/controller')
+	app.register_route(ControllerRUDResource, 'retrieve_update_delete_controller', '/controller/<int:controller_id>')
 	app.register_route(User, 'user_info_self', '/user/info')
 	app.register_route(UserTokens, 'user_social_tokens', '/user_social_tokens')
