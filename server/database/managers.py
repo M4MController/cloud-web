@@ -91,10 +91,14 @@ class ControllerManager(BaseSqlManager):
 			.filter_by(user_id=user_id).one()
 
 	def delete_for_user(self, controller_id: int, user_id: int):
-		self.session.query(self.model)\
-			.join(Controller.object)\
+		subquery = self.session.query(self.model)\
 			.filter_by(id=controller_id)\
+			.join(Controller.object)\
 			.filter_by(user_id=user_id)\
+			.with_entities(self.model.id)
+
+		self.session.query(self.model)\
+			.filter(self.model.id.in_(subquery.subquery()))\
 			.delete()
 
 	def update_for_user(self, controller_id: int, user_id: int, data: dict):
