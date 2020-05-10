@@ -17,6 +17,7 @@ from server.resources.utils import provide_db_session, schematic_response
 class SensorsResource(BaseResource):
     class Response(Schema):
         email = fields.String()
+        name = fields.String()
         sensor_id = fields.String()
 
     @provide_db_session
@@ -26,7 +27,15 @@ class SensorsResource(BaseResource):
             .options(joinedload(Sensor.controller).joinedload(Controller.object).joinedload(Object.user)) \
             .all()
 
-        return [{'sensor_id': data[0].id, 'email': data[1]} for data in rows]
+        return [{
+            'sensor_id': data[0].id,
+            'email': data[1],
+            'name': '{object} / {controller} / {sensor}'.format(
+                object=data[0].controller.object.name,
+                controller=data[0].controller.name,
+                sensor=data[0].name,
+            )
+        } for data in rows]
 
 
 class SensorsDataResource(BaseResource):
