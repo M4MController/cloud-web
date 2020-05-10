@@ -2,6 +2,7 @@ import bcrypt
 import itertools
 from flask_jwt_extended import create_access_token
 
+from server import admin
 from server.resources.base import BaseResource
 from server.schemas import (
     ResourceSchema,
@@ -120,6 +121,8 @@ class ObjectsResource(BaseResource):
 
 
 def register_routes(app):
+    admin.register_routes(app)
+
     app.register_route(Auth, 'sign_in', '/sign_in')
     app.register_route(Registration, 'sign_up', '/sign_up')
     app.register_route(ObjectsResource, 'objects', '/objects')
