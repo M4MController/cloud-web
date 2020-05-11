@@ -23,17 +23,17 @@ class SensorsResource(BaseResource):
     @provide_db_session
     @schematic_response(Response(many=True))
     def get(self):
-        rows = self.db_session.query(Sensor, User.login) \
+        rows = self.db_session.query(Sensor) \
             .options(joinedload(Sensor.controller).joinedload(Controller.object).joinedload(Object.user)) \
             .all()
 
         return [{
-            'sensor_id': data[0].id,
-            'email': data[1],
+            'sensor_id': data.id,
+            'email': data.controller.object.user.login,
             'name': '{object} / {controller} / {sensor}'.format(
-                object=data[0].controller.object.name,
-                controller=data[0].controller.name,
-                sensor=data[0].name,
+                object=data.controller.object.name,
+                controller=data.controller.name,
+                sensor=data.name,
             )
         } for data in rows]
 
