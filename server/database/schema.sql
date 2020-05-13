@@ -28,7 +28,7 @@ ALTER TABLE users_info OWNER TO m4m;
 
 CREATE TABLE IF NOT EXISTS companies
 (
-  id      INTEGER PRIMARY KEY,
+  id      SERIAL PRIMARY KEY,
   name    VARCHAR
 );
 ALTER TABLE companies OWNER TO m4m;
