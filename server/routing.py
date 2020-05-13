@@ -11,6 +11,7 @@ from server.schemas import (
 	UserSocialTokensSchema,
 	ObjectSchema,
 	ControllerSchema,
+	SensorSchema,
 )
 
 from server.resources.utils import (
@@ -24,6 +25,7 @@ from server.resources.utils import (
 from server.database.managers import (
 	ObjectManager,
 	ControllerManager,
+	SensorManager,
 	UserManager,
 	UserInfoManager,
 	UserSocialTokensManager,
@@ -35,6 +37,7 @@ from server.validation.schema import (
 	UserInfoRequestSchema,
 	ObjectRequestSchema,
 	ControllerRequestSchema,
+	SensorRequestSchema,
 )
 
 from server.errors import InvalidArgumentError
@@ -194,6 +197,16 @@ class ControllerRUDResource(BaseResource):
 		ControllerManager(self.db_session).update_for_user(controller_id, user_id, request_obj)
 
 		return 200
+
+
+class SensorCResource(BaseResource):
+	@authorized
+	@provide_db_session
+	@schematic_request(SensorRequestSchema())
+	@schematic_response(SensorSchema())
+	@with_user_id(True)
+	def post(self, user_id=None, request_obj=None):
+		return SensorManager(self.db_session).create_for_user(user_id, request_obj)
 
 
 def register_routes(app):

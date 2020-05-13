@@ -150,6 +150,18 @@ class SensorManager(BaseSqlManager):
 				),
 			)
 
+	def create_for_user(self, user_id: int, data: dict):
+		controller_id = data['controller_id']
+		can_access = self.session.query(func.count(Controller.id))\
+			.join(Controller.object_id)\
+			.filter(Controller.id == controller_id)\
+			.filter(Object.user_id == user_id) != 0
+
+		if not can_access:
+			raise UserNoAccess()
+
+		self.create(data)
+
 
 class UserManager(BaseSqlManager):
 	model = User
