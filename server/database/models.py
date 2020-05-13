@@ -67,7 +67,7 @@ class Sensor(Base):
 	deactivation_date = Column(DateTime(timezone=False))
 	status = Column(Integer, default=None)
 	sensor_type = Column(Integer, default=None)
-	controller_id = Column(String, ForeignKey('controllers.id'), nullable=False)
+	controller_id = Column(Integer, ForeignKey('controllers.id'), nullable=False)
 
 	# one-to-many relation
 	controller = relationship(
@@ -87,6 +87,12 @@ class User(Base):
 	objects = relationship(
 		'Object',
 		uselist=True,
+		lazy='noload',
+	)
+
+	social_tokens = relationship(
+		'UserSocialTokens',
+		uselist=False,
 		lazy='noload',
 	)
 
