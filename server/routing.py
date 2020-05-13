@@ -163,11 +163,11 @@ class ObjectRUDResource(BaseResource):
 class ControllerCResource(BaseResource):
 	@authorized
 	@provide_db_session
-	@schematic_request(ControllerSchema())
+	@schematic_request(ControllerRequestSchema())
 	@schematic_response(ControllerSchema())
 	@with_user_id(True)
-	def post(self, user_id, request_obj):
-		pass
+	def post(self, user_id=None, request_obj=None):
+		return ControllerManager(self.db_session).create_for_user(user_id, request_obj)
 
 
 class ControllerRUDResource(BaseResource):
@@ -191,7 +191,9 @@ class ControllerRUDResource(BaseResource):
 	@schematic_request(ControllerRequestSchema())
 	@with_user_id(True)
 	def patch(self, controller_id, user_id=None, request_obj=None):
-		return ControllerManager(self.db_session).update_for_user(controller_id, user_id, request_obj)
+		ControllerManager(self.db_session).update_for_user(controller_id, user_id, request_obj)
+
+		return 200
 
 
 def register_routes(app):

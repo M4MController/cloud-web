@@ -92,6 +92,17 @@ class ControllerManager(BaseSqlManager):
 			.filter_by(id=controller_id)\
 			.filter_by(user_id=user_id).one()
 
+	def create_for_user(self, user_id: int, data: dict):
+		object_id = data['object_id']
+		can_access = self.session.query(func.count(Object.id))\
+			.filter_by(id=object_id)\
+			.filter_by(user_id=user_id)
+
+		if can_access == 0:
+			raise UserNoAccess()
+
+		return self.create(data)
+
 	def __can_access(self, controller_id: int, user_id: int):
 		return self.session.query(func.count(self.model.id))\
 			.join(Controller.object)\
@@ -103,7 +114,7 @@ class ControllerManager(BaseSqlManager):
 			raise UserNoAccess()
 
 		self.session.query(self.model)\
-			.filter_by(controller_id=controller_id)\
+			.filter_by(id=controller_id)\
 			.delete()
 
 	def update_for_user(self, controller_id: int, user_id: int, data: dict):

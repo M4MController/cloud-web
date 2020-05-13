@@ -39,6 +39,7 @@ class ControllerRequestSchema(Schema):
 	id = fields.Integer()
 	name = fields.String()
 	meta = fields.String()
+	object_id = fields.Integer()
 	activation_date = fields.Date()
 	status = fields.Integer()
 	mac = fields.String()
