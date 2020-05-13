@@ -28,8 +28,8 @@ ALTER TABLE users_info OWNER TO m4m;
 
 CREATE TABLE IF NOT EXISTS companies
 (
-  id INTEGER PRIMARY KEY,
-  name VARCHAR,
+  id      INTEGER PRIMARY KEY,
+  name    VARCHAR
 );
 ALTER TABLE comanies OWNER TO m4m;
 
