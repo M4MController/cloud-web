@@ -9,7 +9,7 @@ class SensorsManager(BaseSqlManager):
 	model = Sensor
 
 	def get_rows(self):
-		self.session.query(Sensor) \
+		return self.session.query(Sensor) \
 			.options(joinedload(self.model.controller).joinedload(Controller.object).joinedload(Object.user)) \
 			.all()
 
