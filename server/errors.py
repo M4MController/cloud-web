@@ -92,5 +92,5 @@ class NotAllowedError(BaseApiError):
 	TITLE = 'Not Allowed'
 
 
-class UserNoAccess(NotAllowedError):
+class UserNoAccessError(NotAllowedError):
 	DETAIL = 'You have no access'
