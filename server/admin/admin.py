@@ -73,4 +73,5 @@ class CompanySensorsResource(BaseResource):
 def register_routes(app):
 	app.register_route(SensorsResource, 'admin_sensors', '/admin/sensors')
 	app.register_route(SensorsDataResource, 'admin_sensors_data', '/admin/sensors/<string:sensor_id>/<int:year>/<int:month>/<int:day>')
+	app.register_route(CompanySensorsResource, 'admin_sensors_for_company', '/admin/sensors/<int:company_id>')
 	app.register_route(CompaniesResource, 'admin_companies', '/admin/companies')
