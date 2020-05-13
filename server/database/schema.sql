@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS companies
   id      INTEGER PRIMARY KEY,
   name    VARCHAR
 );
-ALTER TABLE comanies OWNER TO m4m;
+ALTER TABLE companies OWNER TO m4m;
 
 CREATE TABLE IF NOT EXISTS objects
 (
