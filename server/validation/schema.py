@@ -33,3 +33,14 @@ class UserInfoRequestSchema(Schema):
 
 class ObjectRequestSchema(Schema):
 	name = fields.String()
+
+
+class ControllerRequestSchema(Schema):
+	id = fields.Integer()
+	name = fields.String()
+	meta = fields.String()
+	activation_date = fields.Date()
+	status = fields.Integer()
+	mac = fields.String()
+	deactivation_date = fields.String()
+	controller_type = fields.Integer()

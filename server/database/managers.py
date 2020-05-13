@@ -1,6 +1,7 @@
 from sqlalchemy.exc import InternalError, IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.orm import joinedload
+from sqlalchemy import func
 
 from server.database.models import (
 	Object,
@@ -14,7 +15,8 @@ from server.database.models import (
 from server.errors import (
 	ConflictError,
 	ObjectNotFoundError,
-	ObjectExistsError
+	ObjectExistsError,
+	UserNoAccess,
 )
 from datetime import datetime
 
@@ -90,22 +92,26 @@ class ControllerManager(BaseSqlManager):
 			.filter_by(id=controller_id)\
 			.filter_by(user_id=user_id).one()
 
-	def delete_for_user(self, controller_id: int, user_id: int):
-		subquery = self.session.query(self.model)\
-			.filter_by(id=controller_id)\
+	def __can_access(self, controller_id: int, user_id: int):
+		return self.session.query(func.count(self.model.id))\
 			.join(Controller.object)\
-			.filter_by(user_id=user_id)\
-			.with_entities(self.model.id)
+			.filter_by(id=controller_id)\
+			.filter_by(user_id=user_id) != 0
+
+	def delete_for_user(self, controller_id: int, user_id: int):
+		if not self.__can_access(controller_id, user_id):
+			raise UserNoAccess()
 
 		self.session.query(self.model)\
-			.filter(self.model.id.in_(subquery.subquery()))\
+			.filter_by(controller_id=controller_id)\
 			.delete()
 
 	def update_for_user(self, controller_id: int, user_id: int, data: dict):
+		if not self.__can_access(controller_id, user_id):
+			raise UserNoAccess()
+
 		return self.session.query(self.model)\
-			.join(Controller.object)\
 			.filter_by(id=controller_id)\
-			.filter_by(user_id=user_id)\
 			.update(data)
 
 

@@ -34,9 +34,10 @@ from server.validation.schema import (
 	AuthRequestSchema,
 	UserInfoRequestSchema,
 	ObjectRequestSchema,
+	ControllerRequestSchema,
 )
 
-from server.errors import InvalidArgumentError, UserNoAccess
+from server.errors import InvalidArgumentError
 
 
 class Registration(BaseResource):
@@ -187,9 +188,10 @@ class ControllerRUDResource(BaseResource):
 
 	@authorized
 	@provide_db_session
+	@schematic_request(ControllerRequestSchema())
 	@with_user_id(True)
-	def patch(self, controller_id, user_id=None):
-		pass
+	def patch(self, controller_id, user_id=None, request_obj=None):
+		return ControllerManager(self.db_session).update_for_user(controller_id, user_id, request_obj)
 
 
 def register_routes(app):
