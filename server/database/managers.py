@@ -16,7 +16,7 @@ from server.errors import (
 	ConflictError,
 	ObjectNotFoundError,
 	ObjectExistsError,
-	UserNoAccess,
+	UserNoAccessError,
 )
 from datetime import datetime
 
@@ -99,7 +99,7 @@ class ControllerManager(BaseSqlManager):
 			.filter_by(user_id=user_id)
 
 		if can_access == 0:
-			raise UserNoAccess()
+			raise UserNoAccessError()
 
 		return self.create(data)
 
@@ -111,15 +111,20 @@ class ControllerManager(BaseSqlManager):
 
 	def delete_for_user(self, controller_id: int, user_id: int):
 		if not self.__can_access(controller_id, user_id):
-			raise UserNoAccess()
+			raise UserNoAccessError()
 
 		self.session.query(self.model)\
 			.filter_by(id=controller_id)\
 			.delete()
 
 	def update_for_user(self, controller_id: int, user_id: int, data: dict):
-		if not self.__can_access(controller_id, user_id):
-			raise UserNoAccess()
+		object_id = data['object_id']
+		can_access = self.session.query(func.count(Object.id)) \
+			.filter_by(id=object_id) \
+			.filter_by(user_id=user_id) != 0
+
+		if not self.__can_access(controller_id, user_id) or not can_access:
+			raise UserNoAccessError()
 
 		return self.session.query(self.model)\
 			.filter_by(id=controller_id)\
@@ -158,9 +163,46 @@ class SensorManager(BaseSqlManager):
 			.filter(Object.user_id == user_id) != 0
 
 		if not can_access:
-			raise UserNoAccess()
+			raise UserNoAccessError()
 
 		self.create(data)
+
+	def __can_access(self, sensor_id: int, user_id: int):
+		return self.session.query(func.count(self.model))\
+			.join(self.model.controller)\
+			.join(Controller.object_id)\
+			.filter(self.model.id == sensor_id)\
+			.filter(Object.user_id == user_id) != 0
+
+	def get_for_user(self, sensor_id: int, user_id: int):
+		return self.session.query(self.model)\
+			.join(self.model.controller)\
+			.join(Controller.object_id)\
+			.filter(self.model.id == sensor_id)\
+			.filter(Object.user_id == user_id)\
+			.one()
+
+	def delete_for_user(self, sensor_id: int, user_id: int):
+		if not self.__can_access(sensor_id, user_id):
+			raise UserNoAccessError()
+
+		return self.session.query(self.model)\
+			.filter_by(id=sensor_id)\
+			.delete()
+
+	def update_for_user(self, sensor_id: int, user_id: int, data: dict):
+		controller_id = data['controller_id']
+		can_access = self.session.query(func.count(Controller.id))\
+			.join(Controller.object_id)\
+			.filter(Controller.id == controller_id)\
+			.filter(Object.user_id == user_id) != 0
+
+		if not self.__can_access(sensor_id, user_id) or not can_access:
+			raise UserNoAccessError()
+
+		return self.session.query(self.model)\
+			.filter_by(id=sensor_id)\
+			.update(data)
 
 
 class UserManager(BaseSqlManager):

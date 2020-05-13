@@ -209,6 +209,32 @@ class SensorCResource(BaseResource):
 		return SensorManager(self.db_session).create_for_user(user_id, request_obj)
 
 
+class SensorRUDResource(BaseResource):
+	@authorized
+	@provide_db_session
+	@with_user_id(True)
+	def delete(self, sensor_id, user_id=None):
+		SensorManager(self.db_session).delete_for_user(sensor_id, user_id)
+
+		return 200
+
+	@authorized
+	@provide_db_session
+	@schematic_response(SensorSchema())
+	@with_user_id(True)
+	def get(self, sensor_id, user_id=None):
+		return SensorManager(self.db_session).get_for_user(sensor_id, user_id)
+
+	@authorized
+	@provide_db_session
+	@schematic_request(SensorRequestSchema())
+	@with_user_id(True)
+	def patch(self, sensor_id, user_id=None, request_obj=None):
+		SensorManager(self.db_session).update_for_user(sensor_id, user_id, request_obj)
+
+		return 200
+
+
 def register_routes(app):
 	app.register_route(Auth, 'sign_in', '/sign_in')
 	app.register_route(Registration, 'sign_up', '/sign_up')
@@ -217,5 +243,7 @@ def register_routes(app):
 	app.register_route(ObjectRUDResource, 'retrieve_update_delete_object', '/object/<int:object_id>')
 	app.register_route(ControllerCResource, 'create_controller', '/controller')
 	app.register_route(ControllerRUDResource, 'retrieve_update_delete_controller', '/controller/<int:controller_id>')
+	app.register_route(SensorCResource, 'create_sensor', '/sensor')
+	app.register_route(SensorRUDResource, 'retrieve_update_delete_sensor', '/sensor/<int:sensor_id>')
 	app.register_route(User, 'user_info_self', '/user/info')
 	app.register_route(UserTokens, 'user_social_tokens', '/user_social_tokens')
