@@ -168,7 +168,7 @@ class SensorManager(BaseSqlManager):
 		return self.create(data)
 
 	def __can_access(self, sensor_id: str, user_id: int):
-		return self.session.query(func.count(self.model))\
+		return self.session.query(func.count(self.model.id))\
 			.join(self.model.controller)\
 			.join(Controller.object)\
 			.filter(self.model.id == sensor_id)\
