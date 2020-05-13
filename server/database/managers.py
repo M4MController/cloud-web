@@ -158,7 +158,7 @@ class SensorManager(BaseSqlManager):
 	def create_for_user(self, user_id: int, data: dict):
 		controller_id = data['controller_id']
 		can_access = self.session.query(func.count(Controller.id))\
-			.join(Controller.object_id)\
+			.join(Controller.object)\
 			.filter(Controller.id == controller_id)\
 			.filter(Object.user_id == user_id) != 0
 
@@ -170,14 +170,14 @@ class SensorManager(BaseSqlManager):
 	def __can_access(self, sensor_id: int, user_id: int):
 		return self.session.query(func.count(self.model))\
 			.join(self.model.controller)\
-			.join(Controller.object_id)\
+			.join(Controller.object)\
 			.filter(self.model.id == sensor_id)\
 			.filter(Object.user_id == user_id) != 0
 
 	def get_for_user(self, sensor_id: int, user_id: int):
 		return self.session.query(self.model)\
 			.join(self.model.controller)\
-			.join(Controller.object_id)\
+			.join(Controller.object)\
 			.filter(self.model.id == sensor_id)\
 			.filter(Object.user_id == user_id)\
 			.one()
@@ -193,7 +193,7 @@ class SensorManager(BaseSqlManager):
 	def update_for_user(self, sensor_id: int, user_id: int, data: dict):
 		controller_id = data['controller_id']
 		can_access = self.session.query(func.count(Controller.id))\
-			.join(Controller.object_id)\
+			.join(Controller.object)\
 			.filter(Controller.id == controller_id)\
 			.filter(Object.user_id == user_id) != 0
 
