@@ -118,9 +118,9 @@ class ControllerManager(BaseSqlManager):
 			.delete()
 
 	def update_for_user(self, controller_id: int, user_id: int, data: dict):
-		object_id = data['object_id']
-		can_access = self.session.query(func.count(Object.id)) \
-			.filter_by(id=object_id) \
+		can_access = self.session.query(func.count(self.model.id))\
+			.join(self.model.object)\
+			.filter(self.model.id == controller_id)\
 			.filter_by(user_id=user_id) != 0
 
 		if not self.__can_access(controller_id, user_id) or not can_access:
@@ -191,10 +191,10 @@ class SensorManager(BaseSqlManager):
 			.delete()
 
 	def update_for_user(self, sensor_id: str, user_id: int, data: dict):
-		controller_id = data['controller_id']
-		can_access = self.session.query(func.count(Controller.id))\
+		can_access = self.session.query(func.count(self.model.id))\
+			.join(self.model.controller)\
 			.join(Controller.object)\
-			.filter(Controller.id == controller_id)\
+			.filter(self.model.id == sensor_id)\
 			.filter(Object.user_id == user_id) != 0
 
 		if not self.__can_access(sensor_id, user_id) or not can_access:
