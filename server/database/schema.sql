@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS sensors
     status            INT  DEFAULT NULL,
     deactivation_date DATE DEFAULT NULL,
     sensor_type       INT  DEFAULT NULL,
-    company_id        INT REFERENCES companies (id),
+    company_id        INT REFERENCES companies (id)
 );
 ALTER TABLE sensors OWNER TO m4m;
 
