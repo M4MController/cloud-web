@@ -26,6 +26,13 @@ CREATE TABLE IF NOT EXISTS users_info
 );
 ALTER TABLE users_info OWNER TO m4m;
 
+CREATE TABLE IF NOT EXISTS companies
+(
+  id INTEGER PRIMARY KEY,
+  name VARCHAR,
+);
+ALTER TABLE comanies OWNER TO m4m;
+
 CREATE TABLE IF NOT EXISTS objects
 (
     id   SERIAL PRIMARY KEY,
@@ -56,7 +63,8 @@ CREATE TABLE IF NOT EXISTS sensors
     activation_date   DATE DEFAULT NULL,
     status            INT  DEFAULT NULL,
     deactivation_date DATE DEFAULT NULL,
-    sensor_type       INT  DEFAULT NULL
+    sensor_type       INT  DEFAULT NULL,
+    company_id        INT REFERENCES companies (id),
 );
 ALTER TABLE sensors OWNER TO m4m;
 
