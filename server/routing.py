@@ -244,6 +244,6 @@ def register_routes(app):
 	app.register_route(ControllerCResource, 'create_controller', '/controller')
 	app.register_route(ControllerRUDResource, 'retrieve_update_delete_controller', '/controller/<int:controller_id>')
 	app.register_route(SensorCResource, 'create_sensor', '/sensor')
-	app.register_route(SensorRUDResource, 'retrieve_update_delete_sensor', '/sensor/<int:sensor_id>')
+	app.register_route(SensorRUDResource, 'retrieve_update_delete_sensor', '/sensor/<string:sensor_id>')
 	app.register_route(User, 'user_info_self', '/user/info')
 	app.register_route(UserTokens, 'user_social_tokens', '/user_social_tokens')
