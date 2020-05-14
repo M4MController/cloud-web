@@ -68,10 +68,17 @@ class Sensor(Base):
 	status = Column(Integer, default=None)
 	sensor_type = Column(Integer, default=None)
 	controller_id = Column(Integer, ForeignKey('controllers.id'), nullable=False)
+	company_id = Column(Integer, ForeignKey('companies.id'), nullable=True, default=None)
 
 	# one-to-many relation
 	controller = relationship(
 		'Controller',
+		uselist=False,
+		lazy='noload',
+	)
+
+	company = relationship(
+		'Company',
 		uselist=False,
 		lazy='noload',
 	)
@@ -132,5 +139,18 @@ class UserSocialTokens(Base):
 	user = relationship(
 		'User',
 		uselist=False,
+		lazy='noload',
+	)
+
+
+class Company(Base):
+	__tablename__ = 'companies'
+
+	id = Column(Integer, primary_key=True, nullable=False)
+	name = Column(String)
+
+	sensors = relationship(
+		'Sensor',
+		uselist=True,
 		lazy='noload',
 	)
