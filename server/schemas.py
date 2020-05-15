@@ -4,15 +4,15 @@ from marshmallow import Schema, fields
 
 
 class BaseAuthSchema(Schema):
-    token = fields.String()
+	token = fields.String()
 
 
 class RegisterSchema(BaseAuthSchema):
-    pass
+	pass
 
 
 class AuthSchema(BaseAuthSchema):
-    pass
+	pass
 
 
 class BaseWithNameSchema(Schema):
@@ -37,31 +37,31 @@ class UserInfoSchema(BaseWithNameSchema):
 
 
 class UserBriefSchema(Schema):
-    login = fields.String()
+	login = fields.String()
 
 
 class UserBriefInfoSchema(Schema):
-    user_id = fields.Integer()
-    user = fields.Nested(UserBriefSchema)
-    name = fields.String()
+	user_id = fields.Integer()
+	user = fields.Nested(UserBriefSchema)
+	name = fields.String()
 
 
 class UserSocialTokensSchema(Schema):
-    yandex_disk = fields.String()
+	yandex_disk = fields.String()
 
 
 class Base64Field(fields.Field):
-    _encoding = 'utf-8'
+	_encoding = 'utf-8'
 
-    def _serialize(self, value, attr, obj):
-        if value is None:
-            return None
-        return str(base64.b64encode(value), encoding=self._encoding)
+	def _serialize(self, value, attr, obj):
+		if value is None:
+			return None
+		return str(base64.b64encode(value), encoding=self._encoding)
 
-    def _deserialize(self, value, attr, data):
-        if value is None:
-            return None
-        return base64.b64decode(value)
+	def _deserialize(self, value, attr, data):
+		if value is None:
+			return None
+		return base64.b64decode(value)
 
 
 class ObjectSchema(BaseWithNameSchema):
@@ -86,6 +86,6 @@ class SensorSchema(BaseWithNameSchema):
 
 
 class ResourceSchema(Schema):
-    objects = fields.Nested(ObjectSchema, many=True)
-    controllers = fields.Nested(ControllerSchema, many=True)
-    sensors = fields.Nested(SensorSchema(), many=True)
+	objects = fields.Nested(ObjectSchema, many=True)
+	controllers = fields.Nested(ControllerSchema, many=True)
+	sensors = fields.Nested(SensorSchema(), many=True)

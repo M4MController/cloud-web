@@ -44,7 +44,9 @@ def safe_handler(func):
         try:
             return func(self, *args, **kwargs)
         except Exception as e:
+            logger.exception('\n\r---------- Exception occurred ---------\n\r')
             logger.exception(str(e))
+            logger.exception('\n\r---------- Exception message end ---------\n\r')
 
             if not isinstance(e, BaseApiError):
                 e = InternalServerError()
