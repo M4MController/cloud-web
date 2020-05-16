@@ -21,7 +21,8 @@ class SensorsManager(BaseSqlManager):
 					.joinedload(User.social_tokens)).filter(self.model.id == sensor_id).all()
 
 	def get_by_company(self, company_id: int):
-		return self.session.query(self.model)\
+		return self.session.query(self.model) \
+			.options(joinedload(self.model.controller).joinedload(Controller.object).joinedload(Object.user)) \
 			.filter_by(company_id=company_id)\
 			.all()
 
