@@ -79,6 +79,7 @@ class ControllerSchema(BaseWithNameSchema):
 
 
 class SensorSchema(BaseWithNameSchema):
+    id = fields.String()	
     status = fields.Integer()
     type = fields.Integer(attribute='sensor_type')
     controller = fields.Integer(attribute='controller_id')
