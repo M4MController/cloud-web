@@ -67,7 +67,17 @@ class CompanySensorsResource(BaseResource):
 	@provide_db_session
 	@schematic_response(SensorResponse(many=True))
 	def get(self, company_id: int):
-		return SensorsManager(self.db_session).get_by_company(company_id)
+		rows = SensorsManager(self.db_session).get_by_company(company_id)
+		
+		return [{
+			'sensor_id': data.id,
+			'email': data.controller.object.user.login,
+			'name': '{object} / {controller} / {sensor}'.format(
+				object=data.controller.object.name,
+				controller=data.controller.name,
+				sensor=data.name,
+			)
+		} for data in rows]
 
 
 def register_routes(app):
