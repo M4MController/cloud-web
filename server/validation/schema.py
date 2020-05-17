@@ -53,3 +53,4 @@ class SensorRequestSchema(Schema):
 	status = fields.Integer()
 	sensor_type = fields.Integer()
 	controller_id = fields.Integer()
+	company_id = fields.Integer(allow_none=True)
