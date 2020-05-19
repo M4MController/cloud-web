@@ -105,8 +105,12 @@ class UserTokens(BaseResource):
 	@schematic_request(UserSocialTokensSchema())
 	@schematic_response(UserSocialTokensSchema())
 	@with_user_id(True)
-	def patch(self, user_id=None, request_obj=None):
-		return UserSocialTokensManager(self.db_session).update(user_id, request_obj)
+	def patch(self, user_id=None, request_obj: UserSocialTokensSchema = None):
+		manager = UserSocialTokensManager(self.db_session)
+		manager.update(user_id, request_obj)
+
+		if request_obj['yandex_disk'] is not None:
+			manager.sync_user(manager.get_by_user_id(user_id))
 
 
 class ObjectsResource(BaseResource):

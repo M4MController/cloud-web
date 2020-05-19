@@ -19,6 +19,6 @@ RUN touch /var/log/cron.log
 ADD server ./server
 ADD config/__init__.py ./config/__init__.py
 ADD config/config.hjson ./config/config.hjson
-ADD sync/sync_db_with_yadisk.py .
+ADD sync/sync_db.py .
 
 CMD cron && tail -f /var/log/cron.log
