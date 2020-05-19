@@ -1,3 +1,5 @@
+import m4m_sync
+
 from sqlalchemy.exc import InternalError, IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.orm import joinedload
@@ -260,3 +262,47 @@ class UserSocialTokensManager(BaseSqlManager):
 
 	def update(self, user_id: int, data: dict):
 		return self.session.query(self.model).filter_by(user_id=user_id).update(data)
+
+	def sync_user(self, user_token: UserSocialTokens):
+		if user_token.yandex_disk:
+			store = m4m_sync.YaDiskStore(token=user_token.yandex_disk)
+			self.__sync(user_token.user_id, store)
+
+	def __sync(self, user_id: int, store: m4m_sync.stores.BaseStore):
+		remote_controllers = store.get_controllers()
+		local_controllers = self.session.query(Controller).options(joinedload(Controller.object)).filter(
+			Object.user_id == user_id).all()
+
+		local_controllers_macs = [local_controller.mac for local_controller in local_controllers]
+
+		for remote_controller in remote_controllers:
+			if remote_controller.mac in local_controllers_macs:
+				local_controller = next(filter(lambda x: x.mac == remote_controller.mac, local_controllers))
+				if local_controller.name != remote_controller.name:
+					local_controller.name = remote_controller.name
+			else:
+				object_id, = self.session.query(Object.id).filter_by(user_id=user_id).first()
+				local_controller = Controller(
+					name=remote_controller.name,
+					mac=remote_controller.mac,
+					object_id=object_id,
+				)
+				self.session.add(local_controller)
+
+			remote_sensors = store.get_sensors(remote_controller)
+			local_sensors = self.session.query(Sensor).filter_by(controller_id=local_controller.id)
+
+			local_sensor_ids = [local_sensor.id for local_sensor in local_sensors]
+
+			for remote_sensor in remote_sensors:
+				if remote_sensor.id in local_sensor_ids:
+					local_sensor = next(filter(lambda x: x.id == remote_sensor.id, local_sensors))
+					if local_sensor.name != remote_sensor.name:
+						local_sensor.name = remote_sensor.name
+				else:
+					local_sensor = Sensor(
+						name=remote_sensor.name,
+						id=remote_sensor.id,
+						controller_id=local_controller.id,
+					)
+					self.session.add(local_sensor)
