@@ -18,7 +18,7 @@ def main():
     session = Session(create_engine(config['database']['objects']['uri']))
     user_social_tokens_manager = UserSocialTokensManager(session)
 
-    user_tokens = session.query(UserSocialTokens).filter(UserSocialTokens.yandex_disk != None).all()
+    user_tokens = session.query(UserSocialTokens).all()
 
     for user_token in user_tokens:
         try:

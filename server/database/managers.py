@@ -61,27 +61,27 @@ class ObjectManager(BaseSqlManager):
 	model = Object
 
 	def get_all_for_user(self, user_id: int):
-		return self.session.query(self.model)\
-			.filter_by(user_id=user_id)\
-			.options(joinedload(Object.controllers).joinedload(Controller.sensors))\
+		return self.session.query(self.model) \
+			.filter_by(user_id=user_id) \
+			.options(joinedload(Object.controllers).joinedload(Controller.sensors)) \
 			.all()
 
 	def get_by_id_for_user(self, object_id: int, user_id: int):
-		return self.session.query(self.model)\
-			.filter_by(user_id=user_id)\
-			.filter_by(id=object_id)\
+		return self.session.query(self.model) \
+			.filter_by(user_id=user_id) \
+			.filter_by(id=object_id) \
 			.one()
 
 	def update_for_user(self, object_id: int, user_id: int, data: dict):
-		return self.session.query(self.model)\
-			.filter_by(id=object_id)\
-			.filter_by(user_id=user_id)\
+		return self.session.query(self.model) \
+			.filter_by(id=object_id) \
+			.filter_by(user_id=user_id) \
 			.update(data)
 
 	def delete_for_user(self, object_id: int, user_id: int):
-		return self.session.query(self.model)\
-			.filter_by(id=object_id)\
-			.filter_by(user_id=user_id)\
+		return self.session.query(self.model) \
+			.filter_by(id=object_id) \
+			.filter_by(user_id=user_id) \
 			.delete()
 
 
@@ -89,15 +89,15 @@ class ControllerManager(BaseSqlManager):
 	model = Controller
 
 	def get_for_user(self, controller_id: int, user_id: int):
-		return self.session.query(self.model)\
-			.join(Controller.object)\
-			.filter_by(id=controller_id)\
+		return self.session.query(self.model) \
+			.join(Controller.object) \
+			.filter_by(id=controller_id) \
 			.filter_by(user_id=user_id).one()
 
 	def create_for_user(self, user_id: int, data: dict):
 		object_id = data['object_id']
-		can_access = self.session.query(func.count(Object.id))\
-			.filter_by(id=object_id)\
+		can_access = self.session.query(func.count(Object.id)) \
+			.filter_by(id=object_id) \
 			.filter_by(user_id=user_id)
 
 		if can_access == 0:
@@ -106,30 +106,30 @@ class ControllerManager(BaseSqlManager):
 		return self.create(data)
 
 	def __can_access(self, controller_id: int, user_id: int):
-		return self.session.query(func.count(self.model.id))\
-			.join(Controller.object)\
-			.filter_by(id=controller_id)\
-			.filter_by(user_id=user_id) != 0
+		return self.session.query(func.count(self.model.id)) \
+				   .join(Controller.object) \
+				   .filter_by(id=controller_id) \
+				   .filter_by(user_id=user_id) != 0
 
 	def delete_for_user(self, controller_id: int, user_id: int):
 		if not self.__can_access(controller_id, user_id):
 			raise UserNoAccessError()
 
-		self.session.query(self.model)\
-			.filter_by(id=controller_id)\
+		self.session.query(self.model) \
+			.filter_by(id=controller_id) \
 			.delete()
 
 	def update_for_user(self, controller_id: int, user_id: int, data: dict):
-		can_access = self.session.query(func.count(self.model.id))\
-			.join(self.model.object)\
-			.filter(self.model.id == controller_id)\
-			.filter_by(user_id=user_id) != 0
+		can_access = self.session.query(func.count(self.model.id)) \
+						 .join(self.model.object) \
+						 .filter(self.model.id == controller_id) \
+						 .filter_by(user_id=user_id) != 0
 
 		if not self.__can_access(controller_id, user_id) or not can_access:
 			raise UserNoAccessError()
 
-		return self.session.query(self.model)\
-			.filter_by(id=controller_id)\
+		return self.session.query(self.model) \
+			.filter_by(id=controller_id) \
 			.update(data)
 
 
@@ -159,10 +159,10 @@ class SensorManager(BaseSqlManager):
 
 	def create_for_user(self, user_id: int, data: dict):
 		controller_id = data['controller_id']
-		can_access = self.session.query(func.count(Controller.id))\
-			.join(Controller.object)\
-			.filter(Controller.id == controller_id)\
-			.filter(Object.user_id == user_id) != 0
+		can_access = self.session.query(func.count(Controller.id)) \
+						 .join(Controller.object) \
+						 .filter(Controller.id == controller_id) \
+						 .filter(Object.user_id == user_id) != 0
 
 		if not can_access:
 			raise UserNoAccessError()
@@ -170,40 +170,40 @@ class SensorManager(BaseSqlManager):
 		return self.create(data)
 
 	def __can_access(self, sensor_id: str, user_id: int):
-		return self.session.query(func.count(self.model.id))\
-			.join(self.model.controller)\
-			.join(Controller.object)\
-			.filter(self.model.id == sensor_id)\
-			.filter(Object.user_id == user_id) != 0
+		return self.session.query(func.count(self.model.id)) \
+				   .join(self.model.controller) \
+				   .join(Controller.object) \
+				   .filter(self.model.id == sensor_id) \
+				   .filter(Object.user_id == user_id) != 0
 
 	def get_for_user(self, sensor_id: str, user_id: int):
-		return self.session.query(self.model)\
-			.join(self.model.controller)\
-			.join(Controller.object)\
-			.filter(self.model.id == sensor_id)\
-			.filter(Object.user_id == user_id)\
+		return self.session.query(self.model) \
+			.join(self.model.controller) \
+			.join(Controller.object) \
+			.filter(self.model.id == sensor_id) \
+			.filter(Object.user_id == user_id) \
 			.one()
 
 	def delete_for_user(self, sensor_id: str, user_id: int):
 		if not self.__can_access(sensor_id, user_id):
 			raise UserNoAccessError()
 
-		return self.session.query(self.model)\
-			.filter_by(id=sensor_id)\
+		return self.session.query(self.model) \
+			.filter_by(id=sensor_id) \
 			.delete()
 
 	def update_for_user(self, sensor_id: str, user_id: int, data: dict):
-		can_access = self.session.query(func.count(self.model.id))\
-			.join(self.model.controller)\
-			.join(Controller.object)\
-			.filter(self.model.id == sensor_id)\
-			.filter(Object.user_id == user_id) != 0
+		can_access = self.session.query(func.count(self.model.id)) \
+						 .join(self.model.controller) \
+						 .join(Controller.object) \
+						 .filter(self.model.id == sensor_id) \
+						 .filter(Object.user_id == user_id) != 0
 
 		if not self.__can_access(sensor_id, user_id) or not can_access:
 			raise UserNoAccessError()
 
-		return self.session.query(self.model)\
-			.filter_by(id=sensor_id)\
+		return self.session.query(self.model) \
+			.filter_by(id=sensor_id) \
 			.update(data)
 
 
@@ -267,13 +267,31 @@ class UserSocialTokensManager(BaseSqlManager):
 		if user_token.yandex_disk:
 			store = m4m_sync.YaDiskStore(token=user_token.yandex_disk)
 			self.__sync(user_token.user_id, store)
+		else:
+			controllers = self.session.query(Controller) \
+				.options(joinedload(Controller.sensors)) \
+				.filter(Object.user_id == user_token.user_id) \
+				.all()
+			for controller in controllers:
+				for sensor in controller.sensors:
+					self.session.delete(sensor)
+				self.session.delete(controller)
 
 	def __sync(self, user_id: int, store: m4m_sync.stores.BaseStore):
 		remote_controllers = store.get_controllers()
-		local_controllers = self.session.query(Controller).options(joinedload(Controller.object)).filter(
-			Object.user_id == user_id).all()
+		local_controllers = self.session.query(Controller) \
+			.options(joinedload(Controller.object), joinedload(Controller.sensors)) \
+			.filter(Object.user_id == user_id) \
+			.all()
 
 		local_controllers_macs = [local_controller.mac for local_controller in local_controllers]
+		remote_controllers_macs = [remote_controller.mac for remote_controller in remote_controllers]
+
+		for local_controller in local_controllers:
+			if local_controller.mac not in remote_controllers_macs:
+				for local_sensor in local_controller.sensors:
+					self.session.delete(local_sensor)
+				self.session.delete(local_controller)
 
 		for remote_controller in remote_controllers:
 			if remote_controller.mac in local_controllers_macs:
@@ -293,6 +311,11 @@ class UserSocialTokensManager(BaseSqlManager):
 			local_sensors = self.session.query(Sensor).filter_by(controller_id=local_controller.id)
 
 			local_sensor_ids = [local_sensor.id for local_sensor in local_sensors]
+			remote_sensor_ids = [remote_sensor.id for remote_sensor in remote_sensors]
+
+			for local_sensor in local_sensors:
+				if local_sensor.id not in remote_sensor_ids:
+					self.session.delete(local_sensor)
 
 			for remote_sensor in remote_sensors:
 				if remote_sensor.id in local_sensor_ids:
