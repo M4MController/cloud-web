@@ -9,25 +9,15 @@ from m4m_sync.utils import StreamWrapper
 from server.resources.base import BaseResource
 from server.resources.utils import provide_db_session, schematic_response
 
-from server.admin.schemas import SensorResponse, CompanyResponse
-from server.admin.managers import SensorsManager, CompaniesManager
+from server.admin.schemas import SensorResponse, CompanyResponse, UserResponse
+from server.admin.managers import SensorsManager, CompaniesManager, UsersManager
 
 
-class SensorsResource(BaseResource):
+class UsersResource(BaseResource):
 	@provide_db_session
-	@schematic_response(SensorResponse(many=True))
-	def get(self):
-		rows = SensorsManager(self.db_session).get_rows()
-
-		return [{
-			'sensor_id': data.id,
-			'email': data.controller.object.user.login,
-			'name': '{object} / {controller} / {sensor}'.format(
-				object=data.controller.object.name,
-				controller=data.controller.name,
-				sensor=data.name,
-			)
-		} for data in rows]
+	@schematic_response(UserResponse(many=True))
+	def get(self, company_id):
+		return UsersManager(self.db_session).get_by_company_id(company_id)
 
 
 class SensorsDataResource(BaseResource):
@@ -66,8 +56,8 @@ class CompaniesResource(BaseResource):
 class CompanySensorsResource(BaseResource):
 	@provide_db_session
 	@schematic_response(SensorResponse(many=True))
-	def get(self, company_id: int):
-		rows = SensorsManager(self.db_session).get_by_company(company_id)
+	def get(self, company_id: int, user_id: int):
+		rows = SensorsManager(self.db_session).get_for_company(company_id, user_id)
 		
 		return [{
 			'sensor_id': data.id,
@@ -81,7 +71,7 @@ class CompanySensorsResource(BaseResource):
 
 
 def register_routes(app):
-	app.register_route(SensorsResource, 'admin_sensors', '/admin/sensors')
+	app.register_route(UsersResource, 'admin_users', '/admin/<int:company_id>/users')
 	app.register_route(SensorsDataResource, 'admin_sensors_data', '/admin/sensors/<string:sensor_id>/<int:year>/<int:month>/<int:day>')
-	app.register_route(CompanySensorsResource, 'admin_sensors_for_company', '/admin/sensors/<int:company_id>')
+	app.register_route(CompanySensorsResource, 'admin_sensors_for_user', '/admin/<int:company_id>/sensors/<int:user_id>')
 	app.register_route(CompaniesResource, 'admin_companies', '/admin/companies')

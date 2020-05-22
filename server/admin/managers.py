@@ -1,8 +1,24 @@
+import typing
+
+from sqlalchemy import and_
 from sqlalchemy.orm import joinedload
 
 from server.database.managers import BaseSqlManager
 
-from server.database.models import Sensor, Controller, Object, User, Company
+from server.database.models import Sensor, Controller, Object, User, Company, UserInfo
+
+
+class UsersManager(BaseSqlManager):
+	model = User
+
+	def get_by_company_id(self, company_id) -> typing.List[User]:
+		return self.session.query(UserInfo). \
+			options(joinedload(UserInfo.user)
+					.joinedload(User.objects)
+					.joinedload(Object.controllers)
+					.joinedload(Controller.sensors)
+					.joinedload(Sensor.company)
+			).filter(Company.id == company_id).all()
 
 
 class SensorsManager(BaseSqlManager):
@@ -20,10 +36,10 @@ class SensorsManager(BaseSqlManager):
 					.joinedload(Object.user)
 					.joinedload(User.social_tokens)).filter(self.model.id == sensor_id).all()
 
-	def get_by_company(self, company_id: int):
+	def get_for_company(self, company_id: int, user_id: int):
 		return self.session.query(self.model) \
 			.options(joinedload(self.model.controller).joinedload(Controller.object).joinedload(Object.user)) \
-			.filter_by(company_id=company_id)\
+			.filter(and_(Company.id == company_id, User.id == user_id)) \
 			.all()
 
 
