@@ -13,23 +13,6 @@ from server.admin.schemas import SensorResponse, CompanyResponse
 from server.admin.managers import SensorsManager, CompaniesManager
 
 
-class SensorsResource(BaseResource):
-	@provide_db_session
-	@schematic_response(SensorResponse(many=True))
-	def get(self):
-		rows = SensorsManager(self.db_session).get_rows()
-
-		return [{
-			'sensor_id': data.id,
-			'email': data.controller.object.user.login,
-			'name': '{object} / {controller} / {sensor}'.format(
-				object=data.controller.object.name,
-				controller=data.controller.name,
-				sensor=data.name,
-			)
-		} for data in rows]
-
-
 class SensorsDataResource(BaseResource):
 	@provide_db_session
 	def get(self, sensor_id: str, year: int, month: int, day: int):
@@ -81,7 +64,6 @@ class CompanySensorsResource(BaseResource):
 
 
 def register_routes(app):
-	app.register_route(SensorsResource, 'admin_sensors', '/admin/sensors')
 	app.register_route(SensorsDataResource, 'admin_sensors_data', '/admin/sensors/<string:sensor_id>/<int:year>/<int:month>/<int:day>')
 	app.register_route(CompanySensorsResource, 'admin_sensors_for_company', '/admin/sensors/<int:company_id>')
 	app.register_route(CompaniesResource, 'admin_companies', '/admin/companies')
