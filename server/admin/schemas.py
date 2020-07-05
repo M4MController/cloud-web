@@ -5,8 +5,8 @@ from server.schemas import BaseWithNameSchema
 
 class UserResponse(Schema):
 	id = fields.Integer(attribute='user_id')
-	first_name = fields.String(attribute='second_name')
-	last_name = fields.String(attribute='family_name')
+	first_name = fields.String()
+	last_name = fields.String()
 
 
 class SensorResponse(Schema):

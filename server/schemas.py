@@ -16,24 +16,25 @@ class AuthSchema(BaseAuthSchema):
 
 
 class BaseWithNameSchema(Schema):
-    id = fields.Integer()
-    name = fields.String()
+	id = fields.Integer()
+	name = fields.String()
 
 
 class UserInfoSchema(BaseWithNameSchema):
-    family_name = fields.String()
-    second_name = fields.String()
-    date_receiving = fields.Integer()
-    issued_by = fields.String()
-    division_number = fields.String()
-    registration_addres = fields.String()
-    mailing_addres = fields.String()
-    birth_day = fields.String()
-    sex = fields.Boolean()
-    home_phone = fields.String()
-    mobile_phone = fields.String()
-    citizenship = fields.String()
-    e_mail = fields.String()
+	first_name = fields.String()
+	last_name = fields.String()
+	middle_name = fields.String()
+	date_receiving = fields.Integer()
+	issued_by = fields.String()
+	division_number = fields.String()
+	registration_addres = fields.String()
+	mailing_addres = fields.String()
+	birth_day = fields.String()
+	sex = fields.Boolean()
+	home_phone = fields.String()
+	mobile_phone = fields.String()
+	citizenship = fields.String()
+	e_mail = fields.String()
 
 
 class UserBriefSchema(Schema):
@@ -65,25 +66,25 @@ class Base64Field(fields.Field):
 
 
 class ObjectSchema(BaseWithNameSchema):
-    pass
+	pass
 
 
 class ControllerSchema(BaseWithNameSchema):
-    object = fields.Integer(attribute='object_id')
-    meta = fields.String()
-    activation_date = fields.Date()
-    status = fields.Integer()
-    mac = fields.String()
-    deactivation_date = fields.String()
-    controller_type = fields.Integer()
+	object = fields.Integer(attribute='object_id')
+	meta = fields.String()
+	activation_date = fields.Date()
+	status = fields.Integer()
+	mac = fields.String()
+	deactivation_date = fields.String()
+	controller_type = fields.Integer()
 
 
 class SensorSchema(BaseWithNameSchema):
-    id = fields.String()	
-    status = fields.Integer()
-    type = fields.Integer(attribute='sensor_type')
-    controller = fields.Integer(attribute='controller_id')
-    company = fields.Integer(attribute='company_id')
+	id = fields.String()
+	status = fields.Integer()
+	type = fields.Integer(attribute='sensor_type')
+	controller = fields.Integer(attribute='controller_id')
+	company = fields.Integer(attribute='company_id')
 
 
 class ResourceSchema(Schema):
